@@ -1,73 +1,159 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Mini Charts TradingView</title>
+  <meta charset="UTF-8">
+  <title>Dashboard - Mini Charts</title>
   <style>
     body {
       background-color: #121212;
       margin: 0;
-      font-family: sans-serif;
+      padding: 20px;
       display: flex;
       flex-wrap: wrap;
+      gap: 12px;
       justify-content: center;
-      gap: 10px;
-      padding: 10px;
+      font-family: sans-serif;
     }
-    .mini-chart {
-      width: 300px;
-      height: 200px;
-      border: 1px solid #2c2c2c;
-      border-radius: 8px;
+
+    .tradingview-widget-container {
+      width: 330px;
+      height: 220px;
+      border-radius: 6px;
       overflow: hidden;
+      border: 1px solid #2c2c2c;
+      background: #121212;
     }
   </style>
 </head>
 <body>
 
-  <div class="mini-chart" id="chart1"></div>
-  <div class="mini-chart" id="chart2"></div>
-  <div class="mini-chart" id="chart3"></div>
-  <div class="mini-chart" id="chart4"></div>
-  <div class="mini-chart" id="chart5"></div>
-  <div class="mini-chart" id="chart6"></div>
-  <div class="mini-chart" id="chart7"></div>
-  <div class="mini-chart" id="chart8"></div>
+  <!-- MINDOLM2025 -->
+  <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+    {
+      "symbol": "BMFBOVESPA:MINDOLM2025",
+      "width": 330,
+      "height": 220,
+      "locale": "en",
+      "dateRange": "1D",
+      "colorTheme": "dark",
+      "isTransparent": false
+    }
+    </script>
+  </div>
 
-  <script src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js"></script>
-  <script>
-    const symbols = [
-      { container: "chart1", symbol: "MINDOLM2025" },
-      { container: "chart2", symbol: "FX_IDC:USDBRL" },
-      { container: "chart3", symbol: "AMEX:EWZ" },
-      { container: "chart4", symbol: "NYSE:VALE" },
-      { container: "chart5", symbol: "NYSE:PBR" },
-      { container: "chart6", symbol: "BINANCE:BTCUSDT" },
-      { container: "chart7", symbol: "ACTIVTRADES:BRA50" },
-      { container: "chart8", symbol: "SP:SPX" }
-    ];
+  <!-- USDBRL -->
+  <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+    {
+      "symbol": "ICEEUR:USDBRL",
+      "width": 330,
+      "height": 220,
+      "locale": "en",
+      "dateRange": "1D",
+      "colorTheme": "dark",
+      "isTransparent": false
+    }
+    </script>
+  </div>
 
-    symbols.forEach(s => {
-      new TradingView.MiniSymbolOverviewWidget({
-        "symbol": s.symbol,
-        "container_id": s.container,
-        "width": "100%",
-        "height": "100%",
-        "locale": "pt",
-        "dateRange": "1D",
-        "colorTheme": "dark",
-        "isTransparent": false,
-        "chartType": "line",
-        "lineWidth": 2,
-        "scalePosition": "no",
-        "fontSize": "12",
-        "trendLineColor": "#37a6ef",
-        "underLineColor": "rgba(55, 166, 239, 0.15)",
-        "isLegendVisible": true,
-        "autosize": true
-      });
-    });
-  </script>
+  <!-- EWZ -->
+  <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+    {
+      "symbol": "AMEX:EWZ",
+      "width": 330,
+      "height": 220,
+      "locale": "en",
+      "dateRange": "1D",
+      "colorTheme": "dark",
+      "isTransparent": false
+    }
+    </script>
+  </div>
+
+  <!-- VALE -->
+  <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+    {
+      "symbol": "NYSE:VALE",
+      "width": 330,
+      "height": 220,
+      "locale": "en",
+      "dateRange": "1D",
+      "colorTheme": "dark",
+      "isTransparent": false
+    }
+    </script>
+  </div>
+
+  <!-- PBR -->
+  <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+    {
+      "symbol": "NYSE:PBR",
+      "width": 330,
+      "height": 220,
+      "locale": "en",
+      "dateRange": "1D",
+      "colorTheme": "dark",
+      "isTransparent": false
+    }
+    </script>
+  </div>
+
+  <!-- BTCUSD -->
+  <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+    {
+      "symbol": "BINANCE:BTCUSDT",
+      "width": 330,
+      "height": 220,
+      "locale": "en",
+      "dateRange": "1D",
+      "colorTheme": "dark",
+      "isTransparent": false
+    }
+    </script>
+  </div>
+
+  <!-- BRA50 (iBovespa Futuros - ActivTrades) -->
+  <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+    {
+      "symbol": "ACTIVTRADES:BRA50",
+      "width": 330,
+      "height": 220,
+      "locale": "en",
+      "dateRange": "1D",
+      "colorTheme": "dark",
+      "isTransparent": false
+    }
+    </script>
+  </div>
+
+  <!-- US500.F -->
+  <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+    {
+      "symbol": "FOREXCOM:US500",
+      "width": 330,
+      "height": 220,
+      "locale": "en",
+      "dateRange": "1D",
+      "colorTheme": "dark",
+      "isTransparent": false
+    }
+    </script>
+  </div>
 
 </body>
 </html>

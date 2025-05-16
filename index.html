@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gráfico 6L - Real Futuro CME</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f5f5f5;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    #chart-container {
+      width: 90%;
+      max-width: 900px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    #last-update {
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gráfico 6L - Real Futuro CME (1 min)</h1>
+  <div id="chart-container">
+    <canvas id="priceChart" height="400"></canvas>
+    <div id="last-update">Carregando dados...</div>
+  </div>
+
+  <script>
+    const apiKey = "4e05d772086c4802845f2fc09f8b48f7";
+    const symbol = "6L.CME"; // Símbolo do Real Futuro CME na Twelve Data
+    const interval = "1min"; // Intervalo do candle
+
+    let chart;
+    let chartData = {
+      labels: [],
+      datasets: [{
+        label: "Preço de Fechamento",
+        data: [],
+        borderColor: "rgb(75, 192, 192)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        fill: true,
+        tension: 0.3,
+      }]
+    };
+
+    async function fetchCandles() {
+      try {
+        const url = `https://api.twelvedata.com/time_series?symbol=${symbol}&interval=${interval}&apikey=${apiKey}&format=json&outputsize=30`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.status === "error") {
+          document.getElementById("last-update").textContent = "Erro ao buscar dados: " + data.message;
+          return;
+        }
+
+        const candles = data.values.reverse(); // invertendo para ordem cronológica
+
+        chartData.labels = candles.map(c => c.datetime);
+        chartData.datasets[0].data = candles.map(c => parseFloat(c.close));
+
+        if (!chart) {
+          createChart();
+        } else {
+          chart.update();
+        }
+
+        document.getElementById("last-update").textContent = `Última atualização: ${candles[candles.length - 1].datetime}`;
+      } catch (err) {
+        document.getElementById("last-update").textContent = "Erro ao buscar dados: " + err.message;
+      }
+    }
+
+    function createChart() {
+      const ctx = document.getElementById("priceChart").getContext("2d");
+      chart = new Chart(ctx, {
+        type: "line",
+        data: chartData,
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              display: true,
+              title: {
+                display: true,
+                text: "Horário"
+              },
+              ticks: {
+                maxTicksLimit: 10,
+                maxRotation: 45,
+                minRotation: 45
+              }
+            },
+            y: {
+              display: true,
+              title: {
+                display: true,
+                text: "Preço (USD)"
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: "top"
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+            }
+          },
+          interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
+          }
+        }
+      });
+    }
+
+    // Atualiza a cada 60 segundos
+    fetchCandles();
+    setInterval(fetchCandles, 60000);
+  </script>
+</body>
+</html>

@@ -3,47 +3,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Widget TradingView - MINDOLM2025</title>
+  <title>Dashboard de Ativos - TradingView</title>
   <style>
     body {
       margin: 0;
+      padding: 20px;
       background-color: #121212;
       color: #eee;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      font-family: Arial, sans-serif;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
     }
-    #tradingview_widget {
-      width: 100%;
-      max-width: 900px;
-      height: 600px;
-      box-shadow: 0 0 15px #000;
-      border-radius: 8px;
-      background-color: #121212;
+    .widget-container {
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      padding: 10px;
     }
   </style>
 </head>
 <body>
-  <!-- TradingView Widget BEGIN -->
-  <div id="tradingview_widget"></div>
+  <div class="widget-container" id="widget1"></div>
+  <div class="widget-container" id="widget2"></div>
+  <div class="widget-container" id="widget3"></div>
+  <div class="widget-container" id="widget4"></div>
+  <div class="widget-container" id="widget5"></div>
+  <div class="widget-container" id="widget6"></div>
+  <div class="widget-container" id="widget7"></div>
+  <div class="widget-container" id="widget8"></div>
+
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-  <script type="text/javascript">
-    new TradingView.widget({
-      "width": "100%",
-      "height": 600,
-      "symbol": "MINDOLM2025",
-      "interval": "60",
-      "timezone": "America/Sao_Paulo",
-      "theme": "dark",
-      "style": "1",
-      "locale": "pt",
-      "toolbar_bg": "#2b2b43",
-      "enable_publishing": false,
-      "allow_symbol_change": true,
-      "container_id": "tradingview_widget"
+  <script>
+    const widgets = [
+      { container: 'widget1', symbol: 'MINDOLM2025' },
+      { container: 'widget2', symbol: 'FX_IDC:USDBRL' },
+      { container: 'widget3', symbol: 'AMEX:EWZ' },
+      { container: 'widget4', symbol: 'NYSE:VALE' },
+      { container: 'widget5', symbol: 'NYSE:PBR' },
+      { container: 'widget6', symbol: 'BINANCE:BTCUSDT' },
+      { container: 'widget7', symbol: 'ACTIVTRADES:BRA50' },
+      { container: 'widget8', symbol: 'SP:SPX' },
+    ];
+
+    widgets.forEach(w => {
+      new TradingView.widget({
+        "width": "100%",
+        "height": 300,
+        "symbol": w.symbol,
+        "interval": "60",
+        "timezone": "America/Sao_Paulo",
+        "theme": "dark",
+        "style": "1",
+        "locale": "pt",
+        "toolbar_bg": "#1e1e1e",
+        "enable_publishing": false,
+        "hide_legend": true,
+        "container_id": w.container
+      });
     });
   </script>
-  <!-- TradingView Widget END -->
 </body>
 </html>

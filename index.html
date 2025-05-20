@@ -1,75 +1,135 @@
-<div class="flex flex-col gap-4 p-4">
-  <!-- Ticker Widget -->
-  <div class="tradingview-widget-container">
-    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-    {
-      "symbols": [
-        { "proName": "FOREXCOM:SPXUSD", "title": "S&P 500" },
-        { "proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100" },
-        { "proName": "FX_IDC:EURUSD", "title": "EUR/USD" },
-        { "proName": "BITSTAMP:BTCUSD", "title": "BTC/USD" },
-        { "proName": "BITSTAMP:ETHUSD", "title": "ETH/USD" },
-        { "proName": "FX_IDC:USDBRL", "title": "USD/BRL" },
-        { "proName": "TVC:DXY", "title": "Dólar Index" },
-        { "proName": "AMEX:EWZ", "title": "iShares MSCI Brazil" },
-        { "proName": "NYSE:BLK", "title": "BlackRock" },
-        { "proName": "BLACKBULL:US500.F", "title": "US500 Futuros" },
-        { "proName": "TVC:US02Y", "title": "Treasury 2Y" },
-        { "proName": "TVC:US10Y", "title": "Treasury 10Y" },
-        { "proName": "ACTIVTRADES:BRA50M2025", "title": "Prefixado 2025" },
-        { "proName": "SP:SPX", "title": "S&P Index" },
-        { "proName": "FX:US2000", "title": "Russell 2000" },
-        { "proName": "NASDAQ:NDAQ", "title": "Nasdaq Inc." },
-        { "proName": "CRYPTOCAP:USDT.D", "title": "USDT Dominance" },
-        { "proName": "CRYPTOCAP:BTC.D", "title": "BTC Dominance" },
-        { "proName": "FX_IDC:EURUSD", "title": "EUR/USD" },
-        { "proName": "FX_IDC:JPYUSD", "title": "JPY/USD" },
-        { "proName": "FX_IDC:GBPUSD", "title": "GBP/USD" },
-        { "proName": "TVC:XAU", "title": "Ouro" },
-        { "proName": "TVC:USOIL", "title": "Petróleo" },
-        { "proName": "NYSE:VALE", "title": "VALE" },
-        { "proName": "NYSE:PBR", "title": "Petrobras" }
-      ],
-      "showSymbolLogo": true,
-      "isTransparent": true,
-      "displayMode": "adaptive",
-      "colorTheme": "dark",
-      "locale": "br"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard com Ticker e Mini Gráficos</title>
+  <style>
+    * {
+      box-sizing: border-box;
     }
-    </script>
+
+    body {
+      background-color: #121212;
+      margin: 0;
+      font-family: sans-serif;
+      color: white;
+    }
+
+    .ticker-wrapper {
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .dashboard {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .tradingview-widget-container {
+      width: 330px;
+      height: 220px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid #2c2c2c;
+      background: #121212;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ticker no topo -->
+  <div class="ticker-wrapper">
+    <div class="tradingview-widget-container" style="height:auto; border:none;">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+      {
+        "symbols": [
+          { "proName": "FOREXCOM:SPXUSD", "title": "S&P 500 Index" },
+          { "proName": "FOREXCOM:NSXUSD", "title": "US 100 Cash CFD" },
+          { "proName": "FX_IDC:EURUSD", "title": "EUR to USD" },
+          { "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin" }
+        ],
+        "showSymbolLogo": true,
+        "isTransparent": true,
+        "displayMode": "compact",
+        "colorTheme": "dark",
+        "locale": "en"
+      }
+      </script>
+    </div>
   </div>
 
-  <!-- Mini Charts Grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-    <!-- Generate 25 mini charts dynamically -->
-    <script>
-      const miniSymbols = [
-        "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
-        "FX_IDC:USDBRL", "TVC:DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
-        "TVC:US02Y", "TVC:US10Y", "ACTIVTRADES:BRA50M2025", "SP:SPX", "FX:US2000",
-        "NASDAQ:NDAQ", "CRYPTOCAP:USDT.D", "CRYPTOCAP:BTC.D", "FX_IDC:EURUSD", "FX_IDC:JPYUSD",
-        "FX_IDC:GBPUSD", "TVC:XAU", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
-      ];
+  <!-- Grid de mini-gráficos -->
+  <div class="dashboard">
 
-      miniSymbols.forEach((symbol) => {
-        const container = document.createElement("div");
-        container.className = "tradingview-widget-container";
-        container.innerHTML = `
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-          {
-            "symbol": "${symbol}",
-            "width": "100%",
-            "height": "220",
-            "locale": "br",
-            "dateRange": "1D",
-            "colorTheme": "dark",
-            "isTransparent": false,
-            "autosize": true
-          }
-          </script>
-        `;
-        document.currentScript.parentElement.appendChild(container);
-      });
-    </script>
+    <!-- SPXUSD -->
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+      {
+        "symbol": "FOREXCOM:SPXUSD",
+        "width": 330,
+        "height": 220,
+        "locale": "en",
+        "dateRange": "1D",
+        "colorTheme": "dark",
+        "isTransparent": false
+      }
+      </script>
+    </div>
+
+    <!-- NSXUSD -->
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+      {
+        "symbol": "FOREXCOM:NSXUSD",
+        "width": 330,
+        "height": 220,
+        "locale": "en",
+        "dateRange": "1D",
+        "colorTheme": "dark",
+        "isTransparent": false
+      }
+      </script>
+    </div>
+
+    <!-- EURUSD -->
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+      {
+        "symbol": "FX_IDC:EURUSD",
+        "width": 330,
+        "height": 220,
+        "locale": "en",
+        "dateRange": "1D",
+        "colorTheme": "dark",
+        "isTransparent": false
+      }
+      </script>
+    </div>
+
+    <!-- BTCUSD -->
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+      {
+        "symbol": "BITSTAMP:BTCUSD",
+        "width": 330,
+        "height": 220,
+        "locale": "en",
+        "dateRange": "1D",
+        "colorTheme": "dark",
+        "isTransparent": false
+      }
+      </script>
+    </div>
+
   </div>
-</div>
+</body>
+</html>

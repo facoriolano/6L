@@ -1,134 +1,101 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Widgets Financeiros</title>
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        background-color: black;
-        color: white;
-        font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .ticker-container {
-        width: 100%;
-        max-width: 100vw;
-      }
-
-      .grid-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 10px;
-        padding: 10px;
-        width: 100%;
-        max-width: 1600px;
-        box-sizing: border-box;
-      }
-
-      .widget {
-        min-height: 250px;
-        background: #1e1e1e;
-        border-radius: 8px;
-        overflow: hidden;
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Ticker principal -->
-    <div class="ticker-container">
-      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Widgets com 25 Ativos</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 10px;
+      padding: 10px;
+    }
+    .widget {
+      min-height: 200px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Ticker Widget -->
+  <div class="tradingview-widget-container">
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {
         "symbols": [
-          { "proName": "FOREXCOM:SPXUSD", "title": "S&P 500" },
-          { "proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100" },
-          { "proName": "FX_IDC:EURUSD", "title": "EUR/USD" },
-          { "proName": "BITSTAMP:BTCUSD", "title": "BTC/USD" },
-          { "proName": "BITSTAMP:ETHUSD", "title": "ETH/USD" },
-          { "proName": "FX_IDC:USDBRL", "title": "USD/BRL" },
-          { "proName": "TVC:DXY", "title": "Dólar Index" },
-          { "proName": "AMEX:EWZ", "title": "iShares MSCI Brazil" },
-          { "proName": "NYSE:BLK", "title": "BlackRock" },
-          { "proName": "BLACKBULL:US500.F", "title": "S&P Futuro" },
-          { "proName": "TVC:US02Y", "title": "2Y Treasury" },
-          { "proName": "TVC:US10Y", "title": "10Y Treasury" },
-          { "proName": "ACTIVTRADES:BRA50M2025", "title": "DI Jan/25" },
-          { "proName": "SP:SPX", "title": "S&P 500 Index" },
-          { "proName": "FX:US2000", "title": "Russell 2000" },
-          { "proName": "NASDAQ:NDAQ", "title": "Nasdaq Inc." },
-          { "proName": "CRYPTOCAP:USDT.D", "title": "USDT.Dominance" },
-          { "proName": "CRYPTOCAP:BTC.D", "title": "BTC.Dominance" },
-          { "proName": "FX_IDC:JPYUSD", "title": "JPY/USD" },
-          { "proName": "FX_IDC:GBPUSD", "title": "GBP/USD" },
-          { "proName": "TVC:XAU", "title": "Ouro" },
-          { "proName": "TVC:USOIL", "title": "Petróleo" },
-          { "proName": "NYSE:VALE", "title": "Vale" },
-          { "proName": "NYSE:PBR", "title": "Petrobras" }
+          {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
+          {"proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100"},
+          {"proName": "FX_IDC:EURUSD", "title": "EUR/USD"},
+          {"proName": "BITSTAMP:BTCUSD", "title": "Bitcoin"},
+          {"proName": "BITSTAMP:ETHUSD", "title": "Ethereum"},
+          {"proName": "FX_IDC:USDBRL", "title": "USD/BRL"},
+          {"proName": "TVC:DXY", "title": "Dólar Index"},
+          {"proName": "AMEX:EWZ", "title": "iShares MSCI Brazil"},
+          {"proName": "NYSE:BLK", "title": "BlackRock"},
+          {"proName": "BLACKBULL:US500.F", "title": "US500 Futures"},
+          {"proName": "TVC:US02Y", "title": "US 2Y Yield"},
+          {"proName": "TVC:US10Y", "title": "US 10Y Yield"},
+          {"proName": "ACTIVTRADES:BRA50M2025", "title": "BRA50M2025"},
+          {"proName": "SP:SPX", "title": "S&P 500 Index"},
+          {"proName": "FX:US2000", "title": "Russell 2000"},
+          {"proName": "NASDAQ:NDAQ", "title": "Nasdaq Inc."},
+          {"proName": "CRYPTOCAP:USDT.D", "title": "USDT.D"},
+          {"proName": "CRYPTOCAP:BTC.D", "title": "BTC Dominance"},
+          {"proName": "FX_IDC:JPYUSD", "title": "JPY/USD"},
+          {"proName": "FX_IDC:GBPUSD", "title": "GBP/USD"},
+          {"proName": "TVC:XAU", "title": "Gold"},
+          {"proName": "TVC:USOIL", "title": "Oil"},
+          {"proName": "NYSE:VALE", "title": "Vale"},
+          {"proName": "NYSE:PBR", "title": "Petrobras"}
         ],
         "showSymbolLogo": true,
+        "colorTheme": "dark",
         "isTransparent": false,
         "displayMode": "adaptive",
-        "colorTheme": "dark" 
+        "locale": "en"
       }
-      </script>
-    </div>
+    </script>
+  </div>
 
-    <!-- Grid com mini gráficos -->
-    <div class="grid-container">
-      <!-- Gerado dinamicamente -->
-      <script>
-        const symbols = [
-          "FOREXCOM:SPXUSD",
-          "FOREXCOM:NSXUSD",
-          "FX_IDC:EURUSD",
-          "BITSTAMP:BTCUSD",
-          "BITSTAMP:ETHUSD",
-          "FX_IDC:USDBRL",
-          "TVC:DXY",
-          "AMEX:EWZ",
-          "NYSE:BLK",
-          "BLACKBULL:US500.F",
-          "TVC:US02Y",
-          "TVC:US10Y",
-          "ACTIVTRADES:BRA50M2025",
-          "SP:SPX",
-          "FX:US2000",
-          "NASDAQ:NDAQ",
-          "CRYPTOCAP:USDT.D",
-          "CRYPTOCAP:BTC.D",
-          "FX_IDC:JPYUSD",
-          "FX_IDC:GBPUSD",
-          "TVC:XAU",
-          "TVC:USOIL",
-          "NYSE:VALE",
-          "NYSE:PBR"
-        ];
+  <!-- Mini Gráficos -->
+  <div class="grid-container">
+    <script type="text/javascript">
+      const symbols = [
+        "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
+        "FX_IDC:USDBRL", "TVC:DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
+        "TVC:US02Y", "TVC:US10Y", "ACTIVTRADES:BRA50M2025", "SP:SPX", "FX:US2000",
+        "NASDAQ:NDAQ", "CRYPTOCAP:USDT.D", "CRYPTOCAP:BTC.D", "FX_IDC:JPYUSD", "FX_IDC:GBPUSD",
+        "TVC:XAU", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
+      ];
 
-        symbols.forEach(symbol => {
-          const widget = document.createElement("div");
-          widget.className = "widget";
-          widget.innerHTML = `
-            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-            {
-              "symbol": "${symbol}",
-              "width": "100%",
-              "height": "100%",
-              "locale": "br",
-              "dateRange": "1D",
-              "colorTheme": "dark",
-              "isTransparent": false,
-              "autosize": true
-            }
-            <\/script>
-          `;
-          document.querySelector(".grid-container").appendChild(widget);
+      symbols.forEach(symbol => {
+        const container = document.createElement("div");
+        container.className = "tradingview-widget-container widget";
+
+        const script = document.createElement("script");
+        script.type = "text/javascript";
+        script.async = true;
+        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+        script.innerHTML = JSON.stringify({
+          "symbol": symbol,
+          "width": "100%",
+          "height": "100%",
+          "locale": "en",
+          "dateRange": "1M",
+          "colorTheme": "dark",
+          "isTransparent": false,
+          "autosize": true
         });
-      </script>
-    </div>
-  </body>
+
+        container.appendChild(script);
+        document.body.querySelector(".grid-container").appendChild(container);
+      });
+    </script>
+  </div>
+</body>
 </html>

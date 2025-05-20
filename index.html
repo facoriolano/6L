@@ -4,17 +4,29 @@
   <meta charset="UTF-8">
   <title>Dashboard - Mini Charts</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       background-color: #121212;
       margin: 0;
-      padding: 20px;
+      font-family: sans-serif;
+      color: white;
+    }
+
+    .ticker-wrapper {
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .dashboard {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
       justify-content: center;
-      font-family: sans-serif;
-      flex-direction: column;
-      align-items: center;
+      padding: 20px;
     }
 
     .tradingview-widget-container {
@@ -25,25 +37,14 @@
       border: 1px solid #2c2c2c;
       background: #121212;
     }
-
-    .ticker-container {
-      width: 100%;
-      max-width: 100%;
-      margin-bottom: 20px;
-    }
   </style>
 </head>
 <body>
 
-  <!-- Ticker Widget -->
-  <div class="ticker-container">
-    <div class="tradingview-widget-container">
+  <!-- Ticker no topo -->
+  <div class="ticker-wrapper">
+    <div class="tradingview-widget-container" style="height:auto; border:none;">
       <div class="tradingview-widget-container__widget"></div>
-      <div class="tradingview-widget-copyright">
-        <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank">
-          <span class="blue-text">Track all markets on TradingView</span>
-        </a>
-      </div>
       <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {
         "symbols": [
@@ -52,26 +53,26 @@
           { "proName": "FX_IDC:EURUSD", "title": "EUR to USD" },
           { "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin" },
           { "proName": "BITSTAMP:ETHUSD", "title": "Ethereum" },
-          { "proName": "FX_IDC:USDBRL" },
-          { "proName": "TVC:DXY" },
-          { "proName": "AMEX:EWZ" },
-          { "proName": "NYSE:BLK" },
-          { "proName": "BLACKBULL:US500.F" },
-          { "proName": "TVC:US02Y" },
-          { "proName": "TVC:US10Y" },
-          { "proName": "ACTIVTRADES:BRA50M2025" },
-          { "proName": "SP:SPX" },
-          { "proName": "FX:US2000" },
-          { "proName": "NASDAQ:NDAQ" },
-          { "proName": "CRYPTOCAP:USDT.D" },
-          { "proName": "CRYPTOCAP:BTC.D" },
-          { "proName": "FX_IDC:EURUSD" },
-          { "proName": "FX_IDC:JPYUSD" },
-          { "proName": "FX_IDC:GBPUSD" },
-          { "proName": "TVC:XAU" },
-          { "proName": "TVC:USOIL" },
-          { "proName": "NYSE:VALE" },
-          { "proName": "NYSE:PBR" }
+          { "description": "", "proName": "FX_IDC:USDBRL" },
+          { "description": "", "proName": "TVC:DXY" },
+          { "description": "", "proName": "AMEX:EWZ" },
+          { "description": "", "proName": "NYSE:BLK" },
+          { "description": "", "proName": "BLACKBULL:US500.F" },
+          { "description": "", "proName": "TVC:US02Y" },
+          { "description": "", "proName": "TVC:US10Y" },
+          { "description": "", "proName": "ACTIVTRADES:BRA50M2025" },
+          { "description": "", "proName": "SP:SPX" },
+          { "description": "", "proName": "FX:US2000" },
+          { "description": "", "proName": "NASDAQ:NDAQ" },
+          { "description": "", "proName": "CRYPTOCAP:USDT.D" },
+          { "description": "", "proName": "CRYPTOCAP:BTC.D" },
+          { "description": "", "proName": "FX_IDC:EURUSD" },
+          { "description": "", "proName": "FX_IDC:JPYUSD" },
+          { "description": "", "proName": "FX_IDC:GBPUSD" },
+          { "description": "", "proName": "TVC:XAU" },
+          { "description": "", "proName": "TVC:USOIL" },
+          { "description": "", "proName": "NYSE:VALE" },
+          { "description": "", "proName": "NYSE:PBR" }
         ],
         "showSymbolLogo": true,
         "isTransparent": true,
@@ -83,133 +84,43 @@
     </div>
   </div>
 
-  <!-- MINDOLM2025 -->
-  <div class="tradingview-widget-container">
-    <div class="tradingview-widget-container__widget"></div>
-    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-    {
-      "symbol": "MINDOLM2025",
-      "width": 330,
-      "height": 220,
-      "locale": "en",
-      "dateRange": "1D",
-      "colorTheme": "dark",
-      "isTransparent": false
-    }
-    </script>
-  </div>
+  <!-- Container dos gráficos menores -->
+  <div class="dashboard">
+    <!-- Exemplo: MINDOLM2025 -->
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+      {
+        "symbol": "MINDOLM2025",
+        "width": 330,
+        "height": 220,
+        "locale": "en",
+        "dateRange": "1D",
+        "colorTheme": "dark",
+        "isTransparent": false
+      }
+      </script>
+    </div>
 
-  <!-- USDBRL -->
-  <div class="tradingview-widget-container">
-    <div class="tradingview-widget-container__widget"></div>
-    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-    {
-      "symbol": "USDBRL",
-      "width": 330,
-      "height": 220,
-      "locale": "en",
-      "dateRange": "1D",
-      "colorTheme": "dark",
-      "isTransparent": false
-    }
-    </script>
-  </div>
+    <!-- Você pode duplicar este bloco para adicionar outros gráficos -->
+    <!-- Exemplo: USDBRL -->
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+      {
+        "symbol": "FX_IDC:USDBRL",
+        "width": 330,
+        "height": 220,
+        "locale": "en",
+        "dateRange": "1D",
+        "colorTheme": "dark",
+        "isTransparent": false
+      }
+      </script>
+    </div>
 
-  <!-- EWZ -->
-  <div class="tradingview-widget-container">
-    <div class="tradingview-widget-container__widget"></div>
-    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-    {
-      "symbol": "AMEX:EWZ",
-      "width": 330,
-      "height": 220,
-      "locale": "en",
-      "dateRange": "1D",
-      "colorTheme": "dark",
-      "isTransparent": false
-    }
-    </script>
-  </div>
+    <!-- Continue com os outros símbolos... -->
 
-  <!-- VALE -->
-  <div class="tradingview-widget-container">
-    <div class="tradingview-widget-container__widget"></div>
-    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-    {
-      "symbol": "NYSE:VALE",
-      "width": 330,
-      "height": 220,
-      "locale": "en",
-      "dateRange": "1D",
-      "colorTheme": "dark",
-      "isTransparent": false
-    }
-    </script>
   </div>
-
-  <!-- PBR -->
-  <div class="tradingview-widget-container">
-    <div class="tradingview-widget-container__widget"></div>
-    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-    {
-      "symbol": "NYSE:PBR",
-      "width": 330,
-      "height": 220,
-      "locale": "en",
-      "dateRange": "1D",
-      "colorTheme": "dark",
-      "isTransparent": false
-    }
-    </script>
-  </div>
-
-  <!-- BTCUSD -->
-  <div class="tradingview-widget-container">
-    <div class="tradingview-widget-container__widget"></div>
-    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-    {
-      "symbol": "BINANCE:BTCUSDT",
-      "width": 330,
-      "height": 220,
-      "locale": "en",
-      "dateRange": "1D",
-      "colorTheme": "dark",
-      "isTransparent": false
-    }
-    </script>
-  </div>
-
-  <!-- BRA50 (iBovespa Futuros - ActivTrades) -->
-  <div class="tradingview-widget-container">
-    <div class="tradingview-widget-container__widget"></div>
-    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-    {
-      "symbol": "ACTIVTRADES:BRA50",
-      "width": 330,
-      "height": 220,
-      "locale": "en",
-      "dateRange": "1D",
-      "colorTheme": "dark",
-      "isTransparent": false
-    }
-    </script>
-  </div>
-
-  <!-- US500.F -->
-  <div class="tradingview-widget-container">
-    <div class="tradingview-widget-container__widget"></div>
-    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-    {
-      "symbol": "US500.F",
-      "width": 330,
-      "height": 220,
-      "locale": "en",
-      "dateRange": "1D",
-      "colorTheme": "dark",
-      "isTransparent": false
-    }
-    </script>
-  </div>
-
 </body>
 </html>

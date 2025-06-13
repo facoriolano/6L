@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fabricio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fabricio - Mini Gráficos Reordenáveis</title>
   <style>
     body {
       margin: 0;
@@ -11,91 +11,39 @@
       color: #fff;
       font-family: Arial, sans-serif;
     }
-    .grid-container {
+    #grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 10px;
       padding: 10px;
     }
-    .widget {
+    .tradingview-widget-container.widget {
       min-height: 200px;
+      border: 1px solid #222;
+      border-radius: 4px;
+      background-color: #111;
       cursor: grab;
-      background: #111;
-      border-radius: 6px;
-      overflow: hidden;
     }
-    .widget:active {
+    .tradingview-widget-container.widget:active {
       cursor: grabbing;
     }
-    .iframe-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      padding: 10px;
-    }
-    .iframe-container iframe {
-      flex: 1 1 48%;
-      height: 800px;
-      border: none;
+    /* Estilos para o ghost drag */
+    .sortable-ghost {
+      opacity: 0.4;
     }
   </style>
 </head>
 <body>
-  <!-- Ticker Widget -->
-  <div class="tradingview-widget-container">
-    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-      {
-        "symbols": [
-          {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
-          {"proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100"},
-          {"proName": "FX_IDC:EURUSD", "title": "EUR/USD"},
-          {"proName": "BITSTAMP:BTCUSD", "title": "Bitcoin"},
-          {"proName": "BITSTAMP:ETHUSD", "title": "Ethereum"},
-          {"proName": "FX_IDC:USDBRL", "title": "USD/BRL"},
-          {"proName": "DXY", "title": "Dólar Index"},
-          {"proName": "AMEX:EWZ", "title": "iShares MSCI Brazil"},
-          {"proName": "NYSE:BLK", "title": "BlackRock"},
-          {"proName": "BLACKBULL:US500.F", "title": "US500 Futures"},
-          {"proName": "US02Y", "title": "US 2Y Yield"},
-          {"proName": "US10Y", "title": "US 10Y Yield"},
-          {"proName": "ACTIVTRADES:BRA50M2025", "title": "BRA50M2025"},
-          {"proName": "US500.F", "title": "S&P 500 Index"},
-          {"proName": "US2000", "title": "Russell 2000"},
-          {"proName": "NASDAQ:NDAQ", "title": "Nasdaq Inc."},
-          {"proName": "CRYPTOCAP:USDT.D", "title": "USDT.D"},
-          {"proName": "CRYPTOCAP:BTC.D", "title": "BTC Dominance"},
-          {"proName": "FX_IDC:JPYUSD", "title": "JPY/USD"},
-          {"proName": "FX_IDC:GBPUSD", "title": "GBP/USD"},
-          {"proName": "XAUUSD", "title": "Gold"},
-          {"proName": "TVC:USOIL", "title": "Oil"},
-          {"proName": "NYSE:VALE", "title": "Vale"},
-          {"proName": "NYSE:PBR", "title": "Petrobras"}
-        ],
-        "showSymbolLogo": true,
-        "colorTheme": "dark",
-        "isTransparent": false,
-        "displayMode": "adaptive",
-        "locale": "en"
-      }
-    </script>
-  </div>
 
-  <!-- Mini Gráficos -->
-  <div class="grid-container" id="grid-container">
-    <!-- Os widgets vão ser inseridos aqui pelo JS -->
-  </div>
+  <!-- Grid container onde os widgets ficarão -->
+  <div id="grid-container"></div>
 
-  <!-- NOVO BLOCO: Notícias + Mapa de Calor -->
-  <div class="iframe-container">
-    <iframe src="https://facoriolano.github.io/widget-tradingview/tvnews2.html" title="Notícias"></iframe>
-    <iframe src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Mapa de Calor"></iframe>
-  </div>
-
-  <!-- Sortable.js para drag and drop -->
+  <!-- SortableJS via CDN -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
   <script>
-    // Símbolos para os mini gráficos
+    const gridContainer = document.getElementById('grid-container');
+
     const symbols = [
       "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
       "FX_IDC:USDBRL", "DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
@@ -104,12 +52,11 @@
       "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
     ];
 
-    const gridContainer = document.getElementById('grid-container');
-
-    // Cria os widgets e insere na grid
-    symbols.forEach(symbol => {
+    // Função para criar um widget do TradingView
+    function createWidget(symbol) {
       const container = document.createElement("div");
       container.className = "tradingview-widget-container widget";
+      container.setAttribute('data-symbol', symbol);
 
       const script = document.createElement("script");
       script.type = "text/javascript";
@@ -127,15 +74,37 @@
       });
 
       container.appendChild(script);
-      gridContainer.appendChild(container);
-    });
+      return container;
+    }
 
-    // Inicializa o Sortable para permitir drag-and-drop na grid
-    new Sortable(gridContainer, {
+    // Inicializa a grid com os widgets
+    function initGrid() {
+      gridContainer.innerHTML = '';
+      symbols.forEach(symbol => {
+        gridContainer.appendChild(createWidget(symbol));
+      });
+    }
+
+    initGrid();
+
+    // Inicializa SortableJS
+    const sortable = new Sortable(gridContainer, {
       animation: 150,
       ghostClass: 'sortable-ghost',
-      dragClass: 'sortable-drag',
-      chosenClass: 'sortable-chosen'
+      onEnd: () => {
+        // Pega a nova ordem dos símbolos depois do drag
+        const newSymbols = [];
+        gridContainer.querySelectorAll('.tradingview-widget-container').forEach(container => {
+          newSymbols.push(container.getAttribute('data-symbol'));
+        });
+
+        // Atualiza o array symbols
+        symbols.length = 0;
+        symbols.push(...newSymbols);
+
+        // Recria os widgets na nova ordem para recarregar os scripts
+        initGrid();
+      }
     });
   </script>
 </body>

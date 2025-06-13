@@ -19,6 +19,7 @@
     }
     .widget {
       min-height: 200px;
+      cursor: grab;
     }
     .iframe-container {
       display: flex;
@@ -31,7 +32,12 @@
       height: 800px;
       border: none;
     }
+    .sortable-ghost {
+      opacity: 0.4;
+    }
   </style>
+  <!-- Sortable.js para arrastar e soltar -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
 <body>
   <!-- Ticker Widget -->
@@ -84,6 +90,8 @@
         "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
       ];
 
+      const grid = document.querySelector(".grid-container");
+
       symbols.forEach(symbol => {
         const container = document.createElement("div");
         container.className = "tradingview-widget-container widget";
@@ -104,7 +112,13 @@
         });
 
         container.appendChild(script);
-        document.body.querySelector(".grid-container").appendChild(container);
+        grid.appendChild(container);
+      });
+
+      // Ativar arrastar e soltar com Sortable
+      new Sortable(grid, {
+        animation: 150,
+        ghostClass: 'sortable-ghost'
       });
     </script>
   </div>

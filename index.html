@@ -62,6 +62,7 @@
 </head>
 <body>
 
+  <!-- TICKER -->
   <div class="tradingview-widget-container" style="padding:10px;">
     <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {
@@ -100,13 +101,16 @@
     </script>
   </div>
 
+  <!-- MINI-GRÁFICOS -->
   <div id="grid-container"></div>
 
+  <!-- IFRAME -->
   <div class="iframe-container">
     <iframe src="https://facoriolano.github.io/widget-tradingview/tvnews2.html" title="Notícias"></iframe>
     <iframe src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Mapa de Calor"></iframe>
   </div>
 
+  <!-- SORTABLE + WIDGET LOADER -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
     const symbols = [
@@ -119,7 +123,6 @@
 
     const gridContainer = document.getElementById("grid-container");
 
-    // Cria e insere os widgets direto (sem reload ao reordenar)
     function loadWidgets() {
       gridContainer.innerHTML = "";
       symbols.forEach(symbol => {
@@ -138,7 +141,7 @@
         script.textContent = JSON.stringify({
           symbol: symbol,
           width: "100%",
-          height: "calc(100% - 24px)",
+          height: "100%",
           locale: "en",
           dateRange: "1D",
           colorTheme: "dark",
@@ -156,19 +159,17 @@
     new Sortable(gridContainer, {
       animation: 150,
       handle: ".drag-handle",
-      onEnd: (evt) => {
-        // Atualiza o array symbols para refletir nova ordem
+      onEnd: () => {
         const newOrder = [];
         gridContainer.querySelectorAll(".tradingview-widget-container").forEach(div => {
-          const scr = div.querySelector("script");
-          if(scr) {
+          const script = div.querySelector("script");
+          if (script) {
             try {
-              const cfg = JSON.parse(scr.textContent);
-              if(cfg.symbol) newOrder.push(cfg.symbol);
+              const cfg = JSON.parse(script.textContent);
+              if (cfg.symbol) newOrder.push(cfg.symbol);
             } catch {}
           }
         });
-        // Atualiza symbols, sem recarregar tudo
         symbols.length = 0;
         newOrder.forEach(s => symbols.push(s));
       }

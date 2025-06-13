@@ -112,9 +112,8 @@
 
   <!-- SORTABLE + WIDGET LOADER -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-  <script src="https://s3.tradingview.com/tv.js"></script>
   <script>
-    const defaultSymbols = [
+    const symbols = [
       "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
       "FX_IDC:USDBRL", "DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
       "US02Y", "US10Y", "ACTIVTRADES:BRA50M2025", "US500.F", "US2000",
@@ -122,32 +121,24 @@
       "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
     ];
 
-    // Pega do localStorage ou default
-    let symbols = JSON.parse(localStorage.getItem('symbolsOrder')) || defaultSymbols.slice();
-
     const gridContainer = document.getElementById("grid-container");
 
     function loadWidgets() {
       gridContainer.innerHTML = "";
-      symbols.forEach((symbol, index) => {
+      symbols.forEach(symbol => {
         const container = document.createElement("div");
-        container.className = "widget";
+        container.className = "tradingview-widget-container widget";
 
         const handle = document.createElement("div");
         handle.className = "drag-handle";
         handle.textContent = "⇅ Drag here";
         container.appendChild(handle);
 
-        const widgetDiv = document.createElement("div");
-        widgetDiv.id = `widget_${index}`;
-        widgetDiv.style.flex = "1";
-        container.appendChild(widgetDiv);
-
-        gridContainer.appendChild(container);
-
-        // Cria o widget TradingView mini-symbol-overview
-        new TradingView.MiniWidget({
-          container_id: `widget_${index}`,
+        const script = document.createElement("script");
+        script.type = "text/javascript";
+        script.async = true;
+        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+        script.textContent = JSON.stringify({
           symbol: symbol,
           width: "100%",
           height: "100%",
@@ -155,8 +146,11 @@
           dateRange: "1D",
           colorTheme: "dark",
           isTransparent: false,
-          autosize: true,
+          autosize: true
         });
+
+        container.appendChild(script);
+        gridContainer.appendChild(container);
       });
     }
 
@@ -167,76 +161,19 @@
       handle: ".drag-handle",
       onEnd: () => {
         const newOrder = [];
-        gridContainer.querySelectorAll(".widget").forEach(div => {
-          const widgetDiv = div.querySelector("div[id^='widget_']");
-          if (widgetDiv) {
-            // O id é no formato widget_INDEX, pegamos o symbol pelo índice na variável symbols atual
-            const idx = parseInt(widgetDiv.id.split('_')[1]);
-            // Pegamos o símbolo pelo índice e armazenamos em newOrder
-            // Mas atenção: indices podem estar desatualizados, então vamos pegar o símbolo pelo texto do widget:
-            // Porém o widget não tem texto legível, então vamos armazenar o símbolo no container para facilitar:
-            // Alternativa simples: pegar pelo texto do data-symbol do container
-            const parentWidget = div;
-            const symbol = symbols[idx]; // Pode dar problema, vamos armazenar o símbolo no atributo data-symbol
-            if (parentWidget.dataset.symbol) {
-              newOrder.push(parentWidget.dataset.symbol);
-            } else {
-              newOrder.push(symbol);
-            }
+        gridContainer.querySelectorAll(".tradingview-widget-container").forEach(div => {
+          const script = div.querySelector("script");
+          if (script) {
+            try {
+              const cfg = JSON.parse(script.textContent);
+              if (cfg.symbol) newOrder.push(cfg.symbol);
+            } catch {}
           }
         });
-        symbols = newOrder;
-        localStorage.setItem('symbolsOrder', JSON.stringify(symbols));
-        loadWidgets(); // Recarrega os widgets para evitar problemas
+        symbols.length = 0;
+        newOrder.forEach(s => symbols.push(s));
       }
     });
-
-    // Para garantir que cada container saiba qual símbolo tem (facilita salvar a ordem)
-    function setDataSymbols() {
-      const widgets = gridContainer.querySelectorAll(".widget");
-      widgets.forEach((widget, i) => {
-        widget.dataset.symbol = symbols[i];
-      });
-    }
-
-    // Inicialmente seta os data-symbols
-    setDataSymbols();
-
-    // Sempre que recarregar os widgets, atualiza o data-symbols
-    const originalLoadWidgets = loadWidgets;
-    loadWidgets = function() {
-      gridContainer.innerHTML = "";
-      symbols.forEach((symbol, index) => {
-        const container = document.createElement("div");
-        container.className = "widget";
-        container.dataset.symbol = symbol;
-
-        const handle = document.createElement("div");
-        handle.className = "drag-handle";
-        handle.textContent = "⇅ Drag here";
-        container.appendChild(handle);
-
-        const widgetDiv = document.createElement("div");
-        widgetDiv.id = `widget_${index}`;
-        widgetDiv.style.flex = "1";
-        container.appendChild(widgetDiv);
-
-        gridContainer.appendChild(container);
-
-        new TradingView.MiniWidget({
-          container_id: `widget_${index}`,
-          symbol: symbol,
-          width: "100%",
-          height: "100%",
-          locale: "en",
-          dateRange: "1D",
-          colorTheme: "dark",
-          isTransparent: false,
-          autosize: true,
-        });
-      });
-    };
-
   </script>
 </body>
 </html>

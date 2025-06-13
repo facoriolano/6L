@@ -12,7 +12,6 @@
       font-family: Arial, sans-serif;
     }
 
-    /* Container grid dos widgets */
     #grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -31,7 +30,6 @@
       flex-direction: column;
     }
 
-    /* Barra para arrastar (handle) */
     .drag-handle {
       height: 24px;
       background: #222;
@@ -48,13 +46,6 @@
       cursor: grabbing;
     }
 
-    /* Área do gráfico (script embed) */
-    .widget > script {
-      flex-grow: 1;
-      height: calc(100% - 24px);
-    }
-
-    /* Container dos iframes de notícias e mapa de calor */
     .iframe-container {
       display: flex;
       flex-wrap: wrap;
@@ -71,7 +62,6 @@
 </head>
 <body>
 
-  <!-- Ticker Widget -->
   <div class="tradingview-widget-container" style="padding:10px;">
     <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {
@@ -110,18 +100,14 @@
     </script>
   </div>
 
-  <!-- Mini Gráficos -->
   <div id="grid-container"></div>
 
-  <!-- Notícias e Mapa de Calor -->
   <div class="iframe-container">
     <iframe src="https://facoriolano.github.io/widget-tradingview/tvnews2.html" title="Notícias"></iframe>
     <iframe src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Mapa de Calor"></iframe>
   </div>
 
-  <!-- SortableJS (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-
   <script>
     const symbols = [
       "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
@@ -133,42 +119,35 @@
 
     const gridContainer = document.getElementById("grid-container");
 
-    function createWidget(symbol) {
-      const container = document.createElement("div");
-      container.className = "tradingview-widget-container widget";
-
-      // Drag handle
-      const handle = document.createElement("div");
-      handle.className = "drag-handle";
-      handle.textContent = "⇅ Drag here";
-      container.appendChild(handle);
-
-      // TradingView embed script
-      const script = document.createElement("script");
-      script.type = "text/javascript";
-      script.async = true;
-      script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
-
-      // Config JSON dentro do script como texto
-      script.textContent = JSON.stringify({
-        "symbol": symbol,
-        "width": "100%",
-        "height": "calc(100% - 24px)",
-        "locale": "en",
-        "dateRange": "1D",
-        "colorTheme": "dark",
-        "isTransparent": false,
-        "autosize": true
-      });
-
-      container.appendChild(script);
-      return container;
-    }
-
+    // Cria e insere os widgets direto (sem reload ao reordenar)
     function loadWidgets() {
       gridContainer.innerHTML = "";
       symbols.forEach(symbol => {
-        gridContainer.appendChild(createWidget(symbol));
+        const container = document.createElement("div");
+        container.className = "tradingview-widget-container widget";
+
+        const handle = document.createElement("div");
+        handle.className = "drag-handle";
+        handle.textContent = "⇅ Drag here";
+        container.appendChild(handle);
+
+        const script = document.createElement("script");
+        script.type = "text/javascript";
+        script.async = true;
+        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+        script.textContent = JSON.stringify({
+          symbol: symbol,
+          width: "100%",
+          height: "calc(100% - 24px)",
+          locale: "en",
+          dateRange: "1D",
+          colorTheme: "dark",
+          isTransparent: false,
+          autosize: true
+        });
+
+        container.appendChild(script);
+        gridContainer.appendChild(container);
       });
     }
 
@@ -176,31 +155,22 @@
 
     new Sortable(gridContainer, {
       animation: 150,
-      ghostClass: "sortable-ghost",
-      chosenClass: "sortable-chosen",
       handle: ".drag-handle",
       onEnd: (evt) => {
-        evt.preventDefault();
-
-        // Atualiza a ordem dos símbolos no array symbols
+        // Atualiza o array symbols para refletir nova ordem
         const newOrder = [];
         gridContainer.querySelectorAll(".tradingview-widget-container").forEach(div => {
-          const script = div.querySelector("script");
-          if (script) {
+          const scr = div.querySelector("script");
+          if(scr) {
             try {
-              const cfg = JSON.parse(script.textContent);
-              if (cfg.symbol) newOrder.push(cfg.symbol);
-            } catch (e) {
-              console.warn("Erro parsing widget JSON:", e);
-            }
+              const cfg = JSON.parse(scr.textContent);
+              if(cfg.symbol) newOrder.push(cfg.symbol);
+            } catch {}
           }
         });
-
-        symbols.length = 0; // limpa array
+        // Atualiza symbols, sem recarregar tudo
+        symbols.length = 0;
         newOrder.forEach(s => symbols.push(s));
-
-        // Recarrega os widgets para garantir que a ordem seja mantida
-        loadWidgets();
       }
     });
   </script>

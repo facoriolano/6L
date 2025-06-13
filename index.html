@@ -112,10 +112,8 @@
 
   <!-- SORTABLE + WIDGET LOADER -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="https://s3.tradingview.com/tv.js"></script>
   <script>
-    const STORAGE_KEY = "fabricio-widget-order";
-
-    // Ordem padrão dos símbolos
     const defaultSymbols = [
       "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
       "FX_IDC:USDBRL", "DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
@@ -124,47 +122,35 @@
       "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
     ];
 
-    // Tenta recuperar a ordem salva do localStorage
-    function getSavedOrder() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          // Filtra só símbolos válidos para evitar bagunça
-          return parsed.filter(s => defaultSymbols.includes(s));
-        }
-      } catch {
-        // Se der erro, ignora
-      }
-      return [...defaultSymbols];
-    }
-
-    // Salva a ordem no localStorage
-    function saveOrder(order) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(order));
-    }
-
-    // Usa a ordem salva ou padrão
-    let savedSymbols = getSavedOrder();
-
     const gridContainer = document.getElementById("grid-container");
+
+    // Recupera ordem salva no localStorage, ou usa padrão
+    let symbols = JSON.parse(localStorage.getItem("symbolsOrder")) || defaultSymbols;
 
     function loadWidgets() {
       gridContainer.innerHTML = "";
-      savedSymbols.forEach(symbol => {
-        const container = document.createElement("div");
-        container.className = "tradingview-widget-container widget";
 
+      symbols.forEach((symbol, index) => {
+        const container = document.createElement("div");
+        container.className = "widget";
+        container.dataset.symbol = symbol;
+
+        // Drag handle
         const handle = document.createElement("div");
         handle.className = "drag-handle";
         handle.textContent = "⇅ Drag here";
         container.appendChild(handle);
 
-        const script = document.createElement("script");
-        script.type = "text/javascript";
-        script.async = true;
-        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
-        script.textContent = JSON.stringify({
+        // Div onde o TradingView vai inserir o gráfico
+        const widgetDiv = document.createElement("div");
+        widgetDiv.style.flex = "1";
+        container.appendChild(widgetDiv);
+
+        gridContainer.appendChild(container);
+
+        // Cria o widget TradingView MINI-SYMBOL-OVERVIEW
+        new TradingView.widget({
+          container_id: widgetDiv,
           symbol: symbol,
           width: "100%",
           height: "100%",
@@ -172,32 +158,25 @@
           dateRange: "1D",
           colorTheme: "dark",
           isTransparent: false,
-          autosize: true
+          autosize: true,
+          type: "mini"
         });
-
-        container.appendChild(script);
-        gridContainer.appendChild(container);
       });
     }
 
     loadWidgets();
 
-    new Sortable(gridContainer, {
+    const sortable = new Sortable(gridContainer, {
       animation: 150,
       handle: ".drag-handle",
       onEnd: () => {
+        // Atualiza a ordem dos símbolos no array e salva localStorage
         const newOrder = [];
-        gridContainer.querySelectorAll(".tradingview-widget-container").forEach(div => {
-          const script = div.querySelector("script");
-          if (script) {
-            try {
-              const cfg = JSON.parse(script.textContent);
-              if (cfg.symbol) newOrder.push(cfg.symbol);
-            } catch {}
-          }
+        gridContainer.querySelectorAll(".widget").forEach(widget => {
+          newOrder.push(widget.dataset.symbol);
         });
-        savedSymbols = newOrder;
-        saveOrder(savedSymbols);
+        symbols = newOrder;
+        localStorage.setItem("symbolsOrder", JSON.stringify(symbols));
       }
     });
   </script>

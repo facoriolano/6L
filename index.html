@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fabricio</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       margin: 0;
@@ -11,27 +11,48 @@
       color: #fff;
       font-family: Arial, sans-serif;
     }
-    .grid-container {
+
+    #grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 10px;
       padding: 10px;
     }
-    .grid-item {
+
+    .widget {
+      position: relative;
       background-color: #111;
-      border: 1px solid #333;
-      padding: 5px;
+      border-radius: 5px;
+      overflow: hidden;
+      user-select: none;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drag-handle {
+      height: 24px;
+      background: #222;
       cursor: grab;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 12px;
+      color: #aaa;
+      user-select: none;
+      flex-shrink: 0;
     }
-    .drag-over {
-      outline: 2px dashed #888;
+    .sortable-chosen .drag-handle {
+      cursor: grabbing;
     }
+
     .iframe-container {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       padding: 10px;
     }
+
     .iframe-container iframe {
       flex: 1 1 48%;
       height: 800px;
@@ -41,56 +62,58 @@
 </head>
 <body>
 
-  <!-- Ticker Widget -->
-  <div class="tradingview-widget-container">
+  <!-- TICKER -->
+  <div class="tradingview-widget-container" style="padding:10px;">
     <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-    {
-      "symbols": [
-        {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
-        {"proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100"},
-        {"proName": "FX_IDC:EURUSD", "title": "EUR/USD"},
-        {"proName": "BITSTAMP:BTCUSD", "title": "Bitcoin"},
-        {"proName": "BITSTAMP:ETHUSD", "title": "Ethereum"},
-        {"proName": "FX_IDC:USDBRL", "title": "USD/BRL"},
-        {"proName": "DXY", "title": "Dólar Index"},
-        {"proName": "AMEX:EWZ", "title": "iShares MSCI Brazil"},
-        {"proName": "NYSE:BLK", "title": "BlackRock"},
-        {"proName": "BLACKBULL:US500.F", "title": "US500 Futures"},
-        {"proName": "US02Y", "title": "US 2Y Yield"},
-        {"proName": "US10Y", "title": "US 10Y Yield"},
-        {"proName": "ACTIVTRADES:BRA50M2025", "title": "BRA50M2025"},
-        {"proName": "US500.F", "title": "S&P 500 Index"},
-        {"proName": "US2000", "title": "Russell 2000"},
-        {"proName": "NASDAQ:NDAQ", "title": "Nasdaq Inc."},
-        {"proName": "CRYPTOCAP:USDT.D", "title": "USDT.D"},
-        {"proName": "CRYPTOCAP:BTC.D", "title": "BTC Dominance"},
-        {"proName": "FX_IDC:JPYUSD", "title": "JPY/USD"},
-        {"proName": "FX_IDC:GBPUSD", "title": "GBP/USD"},
-        {"proName": "XAUUSD", "title": "Gold"},
-        {"proName": "TVC:USOIL", "title": "Oil"},
-        {"proName": "NYSE:VALE", "title": "Vale"},
-        {"proName": "NYSE:PBR", "title": "Petrobras"}
-      ],
-      "showSymbolLogo": true,
-      "colorTheme": "dark",
-      "isTransparent": false,
-      "displayMode": "adaptive",
-      "locale": "en"
-    }
+      {
+        "symbols": [
+          {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
+          {"proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100"},
+          {"proName": "FX_IDC:EURUSD", "title": "EUR/USD"},
+          {"proName": "BITSTAMP:BTCUSD", "title": "Bitcoin"},
+          {"proName": "BITSTAMP:ETHUSD", "title": "Ethereum"},
+          {"proName": "FX_IDC:USDBRL", "title": "USD/BRL"},
+          {"proName": "DXY", "title": "Dólar Index"},
+          {"proName": "AMEX:EWZ", "title": "iShares MSCI Brazil"},
+          {"proName": "NYSE:BLK", "title": "BlackRock"},
+          {"proName": "BLACKBULL:US500.F", "title": "US500 Futures"},
+          {"proName": "US02Y", "title": "US 2Y Yield"},
+          {"proName": "US10Y", "title": "US 10Y Yield"},
+          {"proName": "ACTIVTRADES:BRA50M2025", "title": "BRA50M2025"},
+          {"proName": "US500.F", "title": "S&P 500 Index"},
+          {"proName": "US2000", "title": "Russell 2000"},
+          {"proName": "NASDAQ:NDAQ", "title": "Nasdaq Inc."},
+          {"proName": "CRYPTOCAP:USDT.D", "title": "USDT.D"},
+          {"proName": "CRYPTOCAP:BTC.D", "title": "BTC Dominance"},
+          {"proName": "FX_IDC:JPYUSD", "title": "JPY/USD"},
+          {"proName": "FX_IDC:GBPUSD", "title": "GBP/USD"},
+          {"proName": "XAUUSD", "title": "Gold"},
+          {"proName": "TVC:USOIL", "title": "Oil"},
+          {"proName": "NYSE:VALE", "title": "Vale"},
+          {"proName": "NYSE:PBR", "title": "Petrobras"}
+        ],
+        "showSymbolLogo": true,
+        "colorTheme": "dark",
+        "isTransparent": false,
+        "displayMode": "adaptive",
+        "locale": "en"
+      }
     </script>
   </div>
 
-  <!-- Mini Gráficos -->
-  <div class="grid-container" id="grid"></div>
+  <!-- MINI-GRÁFICOS -->
+  <div id="grid-container"></div>
 
-  <!-- Notícias + Mapa -->
+  <!-- IFRAME -->
   <div class="iframe-container">
     <iframe src="https://facoriolano.github.io/widget-tradingview/tvnews2.html" title="Notícias"></iframe>
     <iframe src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Mapa de Calor"></iframe>
   </div>
 
+  <!-- SORTABLE + SCRIPT -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
-    const defaultSymbols = [
+    const symbols = [
       "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
       "FX_IDC:USDBRL", "DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
       "US02Y", "US10Y", "ACTIVTRADES:BRA50M2025", "US500.F", "US2000",
@@ -98,61 +121,45 @@
       "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
     ];
 
-    const grid = document.getElementById("grid");
+    const gridContainer = document.getElementById("grid-container");
 
-    // Load saved order or use default
-    const savedOrder = JSON.parse(localStorage.getItem("chartOrder"));
-    const symbols = savedOrder || defaultSymbols;
+    function loadWidgets() {
+      gridContainer.innerHTML = "";
+      symbols.forEach(symbol => {
+        const container = document.createElement("div");
+        container.className = "widget";
 
-    symbols.forEach(symbol => {
-      const item = document.createElement("div");
-      item.className = "grid-item";
-      item.draggable = true;
-      item.dataset.symbol = symbol;
+        const handle = document.createElement("div");
+        handle.className = "drag-handle";
+        handle.textContent = "⇅ Drag here";
+        container.appendChild(handle);
 
-      item.innerHTML = `
-        <iframe src="mini.html?symbol=${symbol}" width="100%" height="200" frameborder="0"></iframe>
-      `;
+        const iframe = document.createElement("iframe");
+        iframe.src = `mini.html?symbol=${encodeURIComponent(symbol)}`;
+        iframe.style.width = "100%";
+        iframe.style.height = "200px";
+        iframe.style.border = "none";
 
-      // Drag and Drop
-      item.addEventListener("dragstart", e => {
-        e.dataTransfer.setData("text/plain", symbol);
-        e.dataTransfer.effectAllowed = "move";
-        item.classList.add("dragging");
+        container.appendChild(iframe);
+        gridContainer.appendChild(container);
       });
+    }
 
-      item.addEventListener("dragend", () => {
-        item.classList.remove("dragging");
-      });
+    loadWidgets();
 
-      item.addEventListener("dragover", e => {
-        e.preventDefault();
-        item.classList.add("drag-over");
-      });
-
-      item.addEventListener("dragleave", () => {
-        item.classList.remove("drag-over");
-      });
-
-      item.addEventListener("drop", e => {
-        e.preventDefault();
-        item.classList.remove("drag-over");
-
-        const fromSymbol = e.dataTransfer.getData("text/plain");
-        const toSymbol = item.dataset.symbol;
-
-        const fromIndex = symbols.indexOf(fromSymbol);
-        const toIndex = symbols.indexOf(toSymbol);
-
-        // Swap
-        symbols.splice(fromIndex, 1);
-        symbols.splice(toIndex, 0, fromSymbol);
-
-        localStorage.setItem("chartOrder", JSON.stringify(symbols));
-        location.reload();
-      });
-
-      grid.appendChild(item);
+    new Sortable(gridContainer, {
+      animation: 150,
+      handle: ".drag-handle",
+      onEnd: () => {
+        const newOrder = [];
+        gridContainer.querySelectorAll(".widget iframe").forEach(iframe => {
+          const url = new URL(iframe.src);
+          const symbol = url.searchParams.get("symbol");
+          if (symbol) newOrder.push(symbol);
+        });
+        symbols.length = 0;
+        newOrder.forEach(s => symbols.push(s));
+      }
     });
   </script>
 </body>

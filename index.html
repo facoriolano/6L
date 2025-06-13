@@ -113,8 +113,6 @@
   <!-- SORTABLE + WIDGET LOADER -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
-    const STORAGE_KEY = "widgetOrder";
-
     const defaultSymbols = [
       "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
       "FX_IDC:USDBRL", "DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
@@ -123,17 +121,8 @@
       "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
     ];
 
-    // Recupera ordem salva, ou usa padrão
-    let symbols;
-    const saved = localStorage.getItem(STORAGE_KEY);
-    try {
-      symbols = saved ? JSON.parse(saved) : defaultSymbols;
-      // Garantir que todos símbolos padrão estejam presentes
-      symbols = symbols.filter(s => defaultSymbols.includes(s));
-      defaultSymbols.forEach(s => { if (!symbols.includes(s)) symbols.push(s); });
-    } catch {
-      symbols = defaultSymbols;
-    }
+    // Tenta carregar do localStorage, senão usa a lista padrão
+    let symbols = JSON.parse(localStorage.getItem('symbolsOrder')) || defaultSymbols.slice();
 
     const gridContainer = document.getElementById("grid-container");
 
@@ -184,9 +173,8 @@
             } catch {}
           }
         });
-        symbols.length = 0;
-        newOrder.forEach(s => symbols.push(s));
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(symbols));
+        symbols = newOrder; // atualiza a variável symbols
+        localStorage.setItem('symbolsOrder', JSON.stringify(symbols)); // salva no localStorage
       }
     });
   </script>

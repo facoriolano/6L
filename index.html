@@ -113,13 +113,27 @@
   <!-- SORTABLE + WIDGET LOADER -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
-    const symbols = [
+    const STORAGE_KEY = "widgetOrder";
+
+    const defaultSymbols = [
       "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
       "FX_IDC:USDBRL", "DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
       "US02Y", "US10Y", "ACTIVTRADES:BRA50M2025", "US500.F", "US2000",
       "NASDAQ:NDAQ", "CRYPTOCAP:USDT.D", "CRYPTOCAP:BTC.D", "FX_IDC:JPYUSD", "FX_IDC:GBPUSD",
       "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
     ];
+
+    // Recupera ordem salva, ou usa padrão
+    let symbols;
+    const saved = localStorage.getItem(STORAGE_KEY);
+    try {
+      symbols = saved ? JSON.parse(saved) : defaultSymbols;
+      // Garantir que todos símbolos padrão estejam presentes
+      symbols = symbols.filter(s => defaultSymbols.includes(s));
+      defaultSymbols.forEach(s => { if (!symbols.includes(s)) symbols.push(s); });
+    } catch {
+      symbols = defaultSymbols;
+    }
 
     const gridContainer = document.getElementById("grid-container");
 
@@ -172,6 +186,7 @@
         });
         symbols.length = 0;
         newOrder.forEach(s => symbols.push(s));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(symbols));
       }
     });
   </script>

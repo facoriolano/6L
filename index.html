@@ -113,10 +113,9 @@
   <!-- SORTABLE + WIDGET LOADER -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
-    // Chave para o localStorage
     const STORAGE_KEY = "fabricio-widget-order";
 
-    // Lista original (padrão)
+    // Ordem padrão dos símbolos
     const defaultSymbols = [
       "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
       "FX_IDC:USDBRL", "DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
@@ -125,30 +124,34 @@
       "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
     ];
 
-    // Tenta carregar a ordem salva no localStorage, senão usa padrão
-    let symbols = [];
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Valida se todos os símbolos salvos estão na lista original, evita dados inválidos
-        symbols = parsed.filter(s => defaultSymbols.includes(s));
-        // Se por algum motivo faltar algum símbolo, adiciona-os ao final para garantir que todos estejam presentes
-        defaultSymbols.forEach(s => {
-          if (!symbols.includes(s)) symbols.push(s);
-        });
-      } else {
-        symbols = [...defaultSymbols];
+    // Tenta recuperar a ordem salva do localStorage
+    function getSavedOrder() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          // Filtra só símbolos válidos para evitar bagunça
+          return parsed.filter(s => defaultSymbols.includes(s));
+        }
+      } catch {
+        // Se der erro, ignora
       }
-    } catch {
-      symbols = [...defaultSymbols];
+      return [...defaultSymbols];
     }
+
+    // Salva a ordem no localStorage
+    function saveOrder(order) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(order));
+    }
+
+    // Usa a ordem salva ou padrão
+    let savedSymbols = getSavedOrder();
 
     const gridContainer = document.getElementById("grid-container");
 
     function loadWidgets() {
       gridContainer.innerHTML = "";
-      symbols.forEach(symbol => {
+      savedSymbols.forEach(symbol => {
         const container = document.createElement("div");
         container.className = "tradingview-widget-container widget";
 
@@ -193,9 +196,8 @@
             } catch {}
           }
         });
-        symbols = newOrder;
-        // Salva a nova ordem no localStorage
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(symbols));
+        savedSymbols = newOrder;
+        saveOrder(savedSymbols);
       }
     });
   </script>

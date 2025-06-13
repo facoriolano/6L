@@ -11,49 +11,68 @@
       color: #fff;
       font-family: Arial, sans-serif;
     }
-    .tradingview-widget-container {
-      padding: 10px;
-    }
+
+    /* Container grid dos widgets */
     #grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 10px;
       padding: 10px;
-      cursor: grab;
     }
+
     .widget {
-      min-height: 200px;
+      position: relative;
       background-color: #111;
       border-radius: 5px;
       overflow: hidden;
-      position: relative;
-      user-select: none; /* impede seleção texto durante drag */
+      user-select: none;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
     }
+
+    /* Barra para arrastar (handle) */
+    .drag-handle {
+      height: 24px;
+      background: #222;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 12px;
+      color: #aaa;
+      user-select: none;
+      flex-shrink: 0;
+    }
+    .sortable-chosen .drag-handle {
+      cursor: grabbing;
+    }
+
+    /* Área do gráfico (script embed) */
+    .widget > script {
+      flex-grow: 1;
+      height: calc(100% - 24px);
+    }
+
+    /* Container dos iframes de notícias e mapa de calor */
     .iframe-container {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       padding: 10px;
     }
+
     .iframe-container iframe {
       flex: 1 1 48%;
       height: 800px;
       border: none;
-      border-radius: 5px;
-      background: #111;
-    }
-    .sortable-chosen {
-      cursor: grabbing !important;
-      opacity: 0.8;
-    }
-    .sortable-ghost {
-      opacity: 0.4;
     }
   </style>
 </head>
 <body>
+
   <!-- Ticker Widget -->
-  <div class="tradingview-widget-container">
+  <div class="tradingview-widget-container" style="padding:10px;">
     <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {
         "symbols": [
@@ -94,13 +113,13 @@
   <!-- Mini Gráficos -->
   <div id="grid-container"></div>
 
-  <!-- Notícias + Mapa de Calor -->
+  <!-- Notícias e Mapa de Calor -->
   <div class="iframe-container">
     <iframe src="https://facoriolano.github.io/widget-tradingview/tvnews2.html" title="Notícias"></iframe>
     <iframe src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Mapa de Calor"></iframe>
   </div>
 
-  <!-- SortableJS -->
+  <!-- SortableJS (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
   <script>
@@ -118,16 +137,23 @@
       const container = document.createElement("div");
       container.className = "tradingview-widget-container widget";
 
+      // Drag handle
+      const handle = document.createElement("div");
+      handle.className = "drag-handle";
+      handle.textContent = "⇅ Drag here";
+      container.appendChild(handle);
+
+      // TradingView embed script
       const script = document.createElement("script");
       script.type = "text/javascript";
       script.async = true;
       script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
 
-      // Usa textContent para o JSON da config
+      // Config JSON dentro do script como texto
       script.textContent = JSON.stringify({
         "symbol": symbol,
         "width": "100%",
-        "height": "100%",
+        "height": "calc(100% - 24px)",
         "locale": "en",
         "dateRange": "1D",
         "colorTheme": "dark",
@@ -140,7 +166,6 @@
     }
 
     function loadWidgets() {
-      // Limpa e cria do zero os widgets
       gridContainer.innerHTML = "";
       symbols.forEach(symbol => {
         gridContainer.appendChild(createWidget(symbol));
@@ -149,35 +174,32 @@
 
     loadWidgets();
 
-    // Evita que arrastar abra links ou selecione texto
-    gridContainer.addEventListener('dragstart', e => {
-      e.preventDefault();
-    });
-
-    // SortableJS init
     new Sortable(gridContainer, {
       animation: 150,
       ghostClass: "sortable-ghost",
       chosenClass: "sortable-chosen",
-      filter: 'iframe,script', // não arrastar iframes nem scripts
+      handle: ".drag-handle",
       onEnd: (evt) => {
-        evt.preventDefault(); // evita comportamento padrão
-        // Atualiza array de symbols conforme ordem atual
+        evt.preventDefault();
+
+        // Atualiza a ordem dos símbolos no array symbols
         const newOrder = [];
         gridContainer.querySelectorAll(".tradingview-widget-container").forEach(div => {
           const script = div.querySelector("script");
-          if(script) {
+          if (script) {
             try {
               const cfg = JSON.parse(script.textContent);
-              if(cfg.symbol) newOrder.push(cfg.symbol);
-            } catch(e) {
-              console.warn('Erro parsing widget JSON:', e);
+              if (cfg.symbol) newOrder.push(cfg.symbol);
+            } catch (e) {
+              console.warn("Erro parsing widget JSON:", e);
             }
           }
         });
-        symbols.length = 0;
+
+        symbols.length = 0; // limpa array
         newOrder.forEach(s => symbols.push(s));
-        // Recarrega widgets com nova ordem
+
+        // Recarrega os widgets para garantir que a ordem seja mantida
         loadWidgets();
       }
     });

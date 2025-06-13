@@ -11,39 +11,42 @@
       color: #fff;
       font-family: Arial, sans-serif;
     }
+
     .grid-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
       gap: 10px;
       padding: 10px;
     }
-    .grid-container iframe {
-      width: 100%;
+
+    .chart-frame {
+      width: 300px;
       height: 200px;
       border: none;
+      cursor: move;
       background-color: #111;
+      border-radius: 8px;
+      overflow: hidden;
     }
+
     .iframe-container {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       padding: 10px;
     }
+
     .iframe-container iframe {
       flex: 1 1 48%;
       height: 800px;
       border: none;
     }
-    .sortable-ghost {
-      opacity: 0.4;
-    }
   </style>
-  <script src="<https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js>"></script>
 </head>
 <body>
-  <!-- Ticker Widget -->
+  <!-- Ticker Tape -->
   <div class="tradingview-widget-container">
-    <script type="text/javascript" src="<https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js>" async>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {
         "symbols": [
           {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
@@ -80,14 +83,17 @@
     </script>
   </div>
 
-  <!-- Mini Gráficos como Iframes -->
-  <div class="grid-container" id="chartGrid"></div>
+  <!-- Mini Charts Container -->
+  <div id="chartGrid" class="grid-container"></div>
 
-  <!-- Notícias e Mapa de Calor -->
+  <!-- News + Heatmap -->
   <div class="iframe-container">
-    <iframe src="<https://facoriolano.github.io/widget-tradingview/tvnews2.html>" title="Notícias"></iframe>
-    <iframe src="<https://facoriolano.github.io/widget-tradingview/heat1.html>" title="Mapa de Calor"></iframe>
+    <iframe src="https://facoriolano.github.io/widget-tradingview/tvnews2.html" title="Notícias"></iframe>
+    <iframe src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Mapa de Calor"></iframe>
   </div>
+
+  <!-- SortableJS -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
   <script>
     const symbols = [
@@ -98,18 +104,21 @@
       "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
     ];
 
-    const grid = document.getElementById('chartGrid');
+    const grid = document.getElementById("chartGrid");
 
     symbols.forEach(symbol => {
-      const iframe = document.createElement('iframe');
+      const iframe = document.createElement("iframe");
+      iframe.className = "chart-frame";
       iframe.src = `mini.html?symbol=${encodeURIComponent(symbol)}`;
       iframe.title = symbol;
+      iframe.loading = "lazy";
+      iframe.draggable = false;
+
       grid.appendChild(iframe);
     });
 
-    new Sortable(grid, {
-      animation: 150,
-      ghostClass: 'sortable-ghost'
+    Sortable.create(grid, {
+      animation: 150
     });
   </script>
 </body>

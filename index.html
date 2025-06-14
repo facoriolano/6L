@@ -61,6 +61,7 @@
   </style>
 </head>
 <body>
+
   <!-- TICKER -->
   <div class="tradingview-widget-container" style="padding:10px;">
     <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
@@ -112,8 +113,8 @@
   <!-- SORTABLE + WIDGET LOADER -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
-    // Default symbols list
-    const defaultSymbols = [
+    // Ordem padrão dos widgets. Use 'let' para permitir a reatribuição a partir do LocalStorage.
+    let symbols = [
       "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
       "FX_IDC:USDBRL", "DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
       "US02Y", "US10Y", "ACTIVTRADES:BRA50M2025", "US500.F", "US2000",
@@ -121,33 +122,34 @@
       "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
     ];
 
-    // Load symbols from localStorage or use default
-    let symbols = defaultSymbols.slice();
-    const savedOrder = localStorage.getItem('symbolOrder');
-    if (savedOrder) {
-      try {
-        const parsedOrder = JSON.parse(savedOrder);
-        if (Array.isArray(parsedOrder) && parsedOrder.length === defaultSymbols.length && parsedOrder.every(s => defaultSymbols.includes(s))) {
-          symbols = parsedOrder;
-        }
-      } catch (e) {
-        console.warn('Failed to parse saved order:', e);
-      }
-    }
-
     const gridContainer = document.getElementById("grid-container");
+
+    // --- INÍCIO DA INTEGRAÇÃO COM LOCALSTORAGE ---
+
+    // 1. CARREGAR A ORDEM SALVA QUANDO A PÁGINA INICIA
+    // ======================================================
+    const savedOrderJSON = localStorage.getItem('widgetOrder');
+    if (savedOrderJSON) {
+      // Se encontramos uma ordem salva, a usamos no lugar da padrão.
+      // JSON.parse converte a string de volta para um array.
+      symbols = JSON.parse(savedOrderJSON);
+      console.log("Ordem dos widgets carregada do LocalStorage.");
+    }
+    
+    // --- FIM DA INTEGRAÇÃO COM LOCALSTORAGE ---
+
 
     function loadWidgets() {
       gridContainer.innerHTML = "";
       symbols.forEach(symbol => {
         const container = document.createElement("div");
         container.className = "tradingview-widget-container widget";
+        // Adicionamos um atributo de dados para facilitar a identificação da ordem depois
+        container.dataset.symbol = symbol;
 
         const handle = document.createElement("div");
         handle.className = "drag-handle";
         handle.textContent = "⇅ Drag here";
-        // Prevent default drag behavior to avoid page reload
-        handle.ondragstart = e => e.preventDefault();
         container.appendChild(handle);
 
         const script = document.createElement("script");
@@ -170,37 +172,28 @@
       });
     }
 
+    // Carrega os widgets com a ordem correta (padrão ou a salva)
     loadWidgets();
 
     new Sortable(gridContainer, {
       animation: 150,
       handle: ".drag-handle",
       onEnd: () => {
-        const newOrder = [];
-        gridContainer.querySelectorAll(".tradingview-widget-container").forEach(div => {
-          const script = div.querySelector("script");
-          if (script) {
-            try {
-              const cfg = JSON.parse(script.textContent);
-              if (cfg.symbol && defaultSymbols.includes(cfg.symbol)) {
-                newOrder.push(cfg.symbol);
-              }
-            } catch (e) {
-              console.warn('Error parsing script content:', e);
-            }
-          }
-        });
-        if (newOrder.length === defaultSymbols.length) {
-          symbols.length = 0;
-          newOrder.forEach(s => symbols.push(s));
-          try {
-            localStorage.setItem('symbolOrder', JSON.stringify(symbols));
-          } catch (e) {
-            console.warn('Failed to save order to localStorage:', e);
-          }
-        } else {
-          console.warn('Invalid order length, not saving');
-        }
+        // Pega a nova ordem dos elementos no DOM
+        const newOrder = Array.from(gridContainer.querySelectorAll(".widget")).map(div => div.dataset.symbol);
+
+        // Atualiza o array 'symbols' em memória para consistência
+        symbols = newOrder;
+
+        // --- INÍCIO DA INTEGRAÇÃO COM LOCALSTORAGE ---
+
+        // 2. SALVAR A NOVA ORDEM APÓS ARRASTAR UM ITEM
+        // ===============================================
+        // JSON.stringify converte o array para uma string para que possa ser salvo.
+        localStorage.setItem('widgetOrder', JSON.stringify(newOrder));
+        console.log("Nova ordem salva no LocalStorage.");
+
+        // --- FIM DA INTEGRAÇÃO COM LOCALSTORAGE ---
       }
     });
   </script>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Fabricio</title>
+  <title>Fabricio - Dashboard</title>
   <style>
     body {
       margin: 0;
@@ -113,7 +113,7 @@
   <!-- SORTABLE + WIDGET LOADER -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
-    // Ordem padrão dos widgets. Use 'let' para permitir a reatribuição a partir do LocalStorage.
+    // Ordem padrão dos widgets.
     let symbols = [
       "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
       "FX_IDC:USDBRL", "DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
@@ -124,32 +124,32 @@
 
     const gridContainer = document.getElementById("grid-container");
 
-    // --- INÍCIO DA INTEGRAÇÃO COM LOCALSTORAGE ---
-
-    // 1. CARREGAR A ORDEM SALVA QUANDO A PÁGINA INICIA
-    // ======================================================
-    const savedOrderJSON = localStorage.getItem('widgetOrder');
-    if (savedOrderJSON) {
-      // Se encontramos uma ordem salva, a usamos no lugar da padrão.
-      // JSON.parse converte a string de volta para um array.
-      symbols = JSON.parse(savedOrderJSON);
-      console.log("Ordem dos widgets carregada do LocalStorage.");
+    // --- CARREGAMENTO SEGURO DO LOCALSTORAGE ---
+    // Esta parte tenta carregar a ordem salva. Se falhar, usa a ordem padrão sem quebrar a página.
+    try {
+      const savedOrderJSON = localStorage.getItem('widgetOrder');
+      if (savedOrderJSON) {
+        const savedSymbols = JSON.parse(savedOrderJSON);
+        if (Array.isArray(savedSymbols) && savedSymbols.length > 0) {
+            symbols = savedSymbols;
+            console.log("Ordem dos widgets carregada com sucesso do LocalStorage.");
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao carregar a ordem do LocalStorage. Usando ordem padrão.", error);
     }
     
-    // --- FIM DA INTEGRAÇÃO COM LOCALSTORAGE ---
-
-
+    // Função para criar os widgets na tela com base na ordem do array 'symbols'
     function loadWidgets() {
       gridContainer.innerHTML = "";
       symbols.forEach(symbol => {
         const container = document.createElement("div");
         container.className = "tradingview-widget-container widget";
-        // Adicionamos um atributo de dados para facilitar a identificação da ordem depois
-        container.dataset.symbol = symbol;
+        container.dataset.symbol = symbol; // Atributo para fácil identificação
 
         const handle = document.createElement("div");
         handle.className = "drag-handle";
-        handle.textContent = "⇅ Drag here";
+        handle.textContent = "⇅ Arraste aqui";
         container.appendChild(handle);
 
         const script = document.createElement("script");
@@ -160,7 +160,7 @@
           symbol: symbol,
           width: "100%",
           height: "100%",
-          locale: "en",
+          locale: "pt", // Alterado para português
           dateRange: "1D",
           colorTheme: "dark",
           isTransparent: false,
@@ -172,28 +172,24 @@
       });
     }
 
-    // Carrega os widgets com a ordem correta (padrão ou a salva)
+    // Carrega os widgets assim que a página abre
     loadWidgets();
 
+    // Inicializa a biblioteca SortableJS para permitir arrastar e soltar
     new Sortable(gridContainer, {
       animation: 150,
       handle: ".drag-handle",
+      // Função que é executada quando você solta um widget
       onEnd: () => {
-        // Pega a nova ordem dos elementos no DOM
+        // Pega a nova ordem dos widgets diretamente do HTML
         const newOrder = Array.from(gridContainer.querySelectorAll(".widget")).map(div => div.dataset.symbol);
-
-        // Atualiza o array 'symbols' em memória para consistência
+        
+        // Atualiza a ordem no array em memória
         symbols = newOrder;
 
-        // --- INÍCIO DA INTEGRAÇÃO COM LOCALSTORAGE ---
-
-        // 2. SALVAR A NOVA ORDEM APÓS ARRASTAR UM ITEM
-        // ===============================================
-        // JSON.stringify converte o array para uma string para que possa ser salvo.
+        // --- SALVANDO A NOVA ORDEM NO LOCALSTORAGE ---
         localStorage.setItem('widgetOrder', JSON.stringify(newOrder));
         console.log("Nova ordem salva no LocalStorage.");
-
-        // --- FIM DA INTEGRAÇÃO COM LOCALSTORAGE ---
       }
     });
   </script>

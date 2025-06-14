@@ -122,19 +122,10 @@
       "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
     ];
 
-    const STORAGE_KEY = "tv_widget_order";
+    // Carrega ordem salva no localStorage ou usa padrão
+    let symbols = JSON.parse(localStorage.getItem("symbolsOrder")) || [...defaultSymbols];
+
     const gridContainer = document.getElementById("grid-container");
-
-    function getSavedSymbols() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      } catch (e) {}
-      return defaultSymbols;
-    }
-
-    let symbols = getSavedSymbols();
 
     function loadWidgets() {
       gridContainer.innerHTML = "";
@@ -180,11 +171,11 @@
             try {
               const cfg = JSON.parse(script.textContent);
               if (cfg.symbol) newOrder.push(cfg.symbol);
-            } catch {}
+            } catch (e) {}
           }
         });
         symbols = newOrder;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(symbols));
+        localStorage.setItem("symbolsOrder", JSON.stringify(newOrder));
       }
     });
   </script>

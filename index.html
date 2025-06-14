@@ -42,7 +42,6 @@
       user-select: none;
       flex-shrink: 0;
     }
-
     .sortable-chosen .drag-handle {
       cursor: grabbing;
     }
@@ -66,39 +65,39 @@
   <!-- TICKER -->
   <div class="tradingview-widget-container" style="padding:10px;">
     <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-      {
-        "symbols": [
-          {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
-          {"proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100"},
-          {"proName": "FX_IDC:EURUSD", "title": "EUR/USD"},
-          {"proName": "BITSTAMP:BTCUSD", "title": "Bitcoin"},
-          {"proName": "BITSTAMP:ETHUSD", "title": "Ethereum"},
-          {"proName": "FX_IDC:USDBRL", "title": "USD/BRL"},
-          {"proName": "DXY", "title": "Dólar Index"},
-          {"proName": "AMEX:EWZ", "title": "iShares MSCI Brazil"},
-          {"proName": "NYSE:BLK", "title": "BlackRock"},
-          {"proName": "BLACKBULL:US500.F", "title": "US500 Futures"},
-          {"proName": "US02Y", "title": "US 2Y Yield"},
-          {"proName": "US10Y", "title": "US 10Y Yield"},
-          {"proName": "ACTIVTRADES:BRA50M2025", "title": "BRA50M2025"},
-          {"proName": "US500.F", "title": "S&P 500 Index"},
-          {"proName": "US2000", "title": "Russell 2000"},
-          {"proName": "NASDAQ:NDAQ", "title": "Nasdaq Inc."},
-          {"proName": "CRYPTOCAP:USDT.D", "title": "USDT.D"},
-          {"proName": "CRYPTOCAP:BTC.D", "title": "BTC Dominance"},
-          {"proName": "FX_IDC:JPYUSD", "title": "JPY/USD"},
-          {"proName": "FX_IDC:GBPUSD", "title": "GBP/USD"},
-          {"proName": "XAUUSD", "title": "Gold"},
-          {"proName": "TVC:USOIL", "title": "Oil"},
-          {"proName": "NYSE:VALE", "title": "Vale"},
-          {"proName": "NYSE:PBR", "title": "Petrobras"}
-        ],
-        "showSymbolLogo": true,
-        "colorTheme": "dark",
-        "isTransparent": false,
-        "displayMode": "adaptive",
-        "locale": "en"
-      }
+    {
+      "symbols": [
+        {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
+        {"proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100"},
+        {"proName": "FX_IDC:EURUSD", "title": "EUR/USD"},
+        {"proName": "BITSTAMP:BTCUSD", "title": "Bitcoin"},
+        {"proName": "BITSTAMP:ETHUSD", "title": "Ethereum"},
+        {"proName": "FX_IDC:USDBRL", "title": "USD/BRL"},
+        {"proName": "DXY", "title": "Dólar Index"},
+        {"proName": "AMEX:EWZ", "title": "iShares MSCI Brazil"},
+        {"proName": "NYSE:BLK", "title": "BlackRock"},
+        {"proName": "BLACKBULL:US500.F", "title": "US500 Futures"},
+        {"proName": "US02Y", "title": "US 2Y Yield"},
+        {"proName": "US10Y", "title": "US 10Y Yield"},
+        {"proName": "ACTIVTRADES:BRA50M2025", "title": "BRA50M2025"},
+        {"proName": "US500.F", "title": "S&P 500 Index"},
+        {"proName": "US2000", "title": "Russell 2000"},
+        {"proName": "NASDAQ:NDAQ", "title": "Nasdaq Inc."},
+        {"proName": "CRYPTOCAP:USDT.D", "title": "USDT.D"},
+        {"proName": "CRYPTOCAP:BTC.D", "title": "BTC Dominance"},
+        {"proName": "FX_IDC:JPYUSD", "title": "JPY/USD"},
+        {"proName": "FX_IDC:GBPUSD", "title": "GBP/USD"},
+        {"proName": "XAUUSD", "title": "Gold"},
+        {"proName": "TVC:USOIL", "title": "Oil"},
+        {"proName": "NYSE:VALE", "title": "Vale"},
+        {"proName": "NYSE:PBR", "title": "Petrobras"}
+      ],
+      "showSymbolLogo": true,
+      "colorTheme": "dark",
+      "isTransparent": false,
+      "displayMode": "adaptive",
+      "locale": "en"
+    }
     </script>
   </div>
 
@@ -111,10 +110,10 @@
     <iframe src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Mapa de Calor"></iframe>
   </div>
 
-  <!-- SCRIPTS -->
+  <!-- SORTABLE + SCRIPT -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
-    const defaultSymbols = [
+    let defaultSymbols = [
       "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
       "FX_IDC:USDBRL", "DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
       "US02Y", "US10Y", "ACTIVTRADES:BRA50M2025", "US500.F", "US2000",
@@ -122,19 +121,22 @@
       "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
     ];
 
-    let symbols;
-    try {
-      const saved = JSON.parse(localStorage.getItem("symbolsOrder"));
-      symbols = Array.isArray(saved) && saved.length ? saved : [...defaultSymbols];
-    } catch {
-      symbols = [...defaultSymbols];
+    // Recupera a ordem salva (se existir)
+    const savedOrder = localStorage.getItem("symbolsOrder");
+    if (savedOrder) {
+      try {
+        const parsed = JSON.parse(savedOrder);
+        if (Array.isArray(parsed) && parsed.length === defaultSymbols.length) {
+          defaultSymbols = parsed;
+        }
+      } catch {}
     }
 
     const gridContainer = document.getElementById("grid-container");
 
     function loadWidgets() {
       gridContainer.innerHTML = "";
-      symbols.forEach(symbol => {
+      defaultSymbols.forEach(symbol => {
         const container = document.createElement("div");
         container.className = "tradingview-widget-container widget";
 
@@ -144,8 +146,9 @@
         container.appendChild(handle);
 
         const script = document.createElement("script");
-        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+        script.type = "text/javascript";
         script.async = true;
+        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
         script.innerHTML = JSON.stringify({
           symbol: symbol,
           width: "100%",
@@ -178,9 +181,8 @@
           return null;
         }).filter(Boolean);
 
-        symbols = newOrder;
-        localStorage.setItem("symbolsOrder", JSON.stringify(symbols));
-        loadWidgets(); // recria widgets
+        localStorage.setItem("symbolsOrder", JSON.stringify(newOrder));
+        location.reload(); // recarrega página para aplicar nova ordem
       }
     });
   </script>

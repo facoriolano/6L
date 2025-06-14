@@ -122,8 +122,19 @@
     ];
 
     // Load symbols from localStorage or use default
+    let symbols = defaultSymbols.slice(); // Create a copy of defaultSymbols
     const savedOrder = localStorage.getItem('symbolOrder');
-    let symbols = savedOrder ? JSON.parse(savedOrder) : defaultSymbols;
+    if (savedOrder) {
+      try {
+        const parsedOrder = JSON.parse(savedOrder);
+        // Ensure parsedOrder is an array and contains valid symbols
+        if (Array.isArray(parsedOrder) && parsedOrder.every(s => defaultSymbols.includes(s))) {
+          symbols = parsedOrder;
+        }
+      } catch (e) {
+        console.warn('Failed to parse saved order, using default symbols:', e);
+      }
+    }
 
     const gridContainer = document.getElementById("grid-container");
 
@@ -171,12 +182,22 @@
             try {
               const cfg = JSON.parse(script.textContent);
               if (cfg.symbol) newOrder.push(cfg.symbol);
-            } catch {}
+            } catch (e) {
+              console.warn('Error parsing script content:', e);
+            }
           }
         });
-        symbols.length = 0;
-        newOrder.forEach(s => symbols.push(s));
-        localStorage.setItem('symbolOrder', JSON.stringify(symbols));
+        if (newOrder.length === symbols.length && newOrder.every(s => defaultSymbols.includes(s))) {
+          symbols.length = 0;
+          newOrder.forEach(s => symbols.push(s));
+          try {
+            localStorage.setItem('symbolOrder', JSON.stringify(symbols));
+          } catch (e) {
+            console.warn('Failed to save order to localStorage:', e);
+          }
+        } else {
+          console.warn('Invalid order detected, not saving to localStorage');
+        }
       }
     });
   </script>

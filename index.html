@@ -105,13 +105,13 @@
   <!-- MINI-GRÁFICOS -->
   <div id="grid-container"></div>
 
-  <!-- IFRAME -->
+  <!-- IFRAMES -->
   <div class="iframe-container">
     <iframe src="https://facoriolano.github.io/widget-tradingview/tvnews2.html" title="Notícias"></iframe>
     <iframe src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Mapa de Calor"></iframe>
   </div>
 
-  <!-- SORTABLE + WIDGET LOADER -->
+  <!-- SORTABLE + LOCALSTORAGE -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
     const defaultSymbols = [
@@ -122,8 +122,13 @@
       "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
     ];
 
-    // Carrega ordem salva no localStorage ou usa padrão
-    let symbols = JSON.parse(localStorage.getItem("symbolsOrder")) || [...defaultSymbols];
+    let symbols;
+    try {
+      const saved = JSON.parse(localStorage.getItem("symbolsOrder"));
+      symbols = Array.isArray(saved) && saved.length ? saved : [...defaultSymbols];
+    } catch {
+      symbols = [...defaultSymbols];
+    }
 
     const gridContainer = document.getElementById("grid-container");
 
@@ -138,11 +143,10 @@
         handle.textContent = "⇅ Drag here";
         container.appendChild(handle);
 
-        const script = document.createElement("script");
-        script.type = "text/javascript";
-        script.async = true;
-        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
-        script.textContent = JSON.stringify({
+        const widgetScript = document.createElement("script");
+        widgetScript.type = "text/javascript";
+        widgetScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+        widgetScript.innerHTML = JSON.stringify({
           symbol: symbol,
           width: "100%",
           height: "100%",
@@ -153,7 +157,7 @@
           autosize: true
         });
 
-        container.appendChild(script);
+        container.appendChild(widgetScript);
         gridContainer.appendChild(container);
       });
     }
@@ -167,15 +171,15 @@
         const newOrder = [];
         gridContainer.querySelectorAll(".tradingview-widget-container").forEach(div => {
           const script = div.querySelector("script");
-          if (script) {
+          if (script && script.innerHTML) {
             try {
-              const cfg = JSON.parse(script.textContent);
+              const cfg = JSON.parse(script.innerHTML);
               if (cfg.symbol) newOrder.push(cfg.symbol);
-            } catch (e) {}
+            } catch {}
           }
         });
         symbols = newOrder;
-        localStorage.setItem("symbolsOrder", JSON.stringify(newOrder));
+        localStorage.setItem("symbolsOrder", JSON.stringify(symbols));
       }
     });
   </script>

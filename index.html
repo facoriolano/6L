@@ -122,18 +122,25 @@
     ];
 
     // Load symbols from localStorage or use default
-    let symbols = defaultSymbols.slice(); // Create a copy of defaultSymbols
+    let symbols = [];
     const savedOrder = localStorage.getItem('symbolOrder');
     if (savedOrder) {
       try {
         const parsedOrder = JSON.parse(savedOrder);
-        // Ensure parsedOrder is an array and contains valid symbols
-        if (Array.isArray(parsedOrder) && parsedOrder.every(s => defaultSymbols.includes(s))) {
+        if (Array.isArray(parsedOrder) && parsedOrder.length === defaultSymbols.length && parsedOrder.every(s => defaultSymbols.includes(s))) {
           symbols = parsedOrder;
+        } else {
+          symbols = defaultSymbols.slice();
+          localStorage.setItem('symbolOrder', JSON.stringify(symbols));
         }
       } catch (e) {
         console.warn('Failed to parse saved order, using default symbols:', e);
+        symbols = defaultSymbols.slice();
+        localStorage.setItem('symbolOrder', JSON.stringify(symbols));
       }
+    } else {
+      symbols = defaultSymbols.slice();
+      localStorage.setItem('symbolOrder', JSON.stringify(symbols));
     }
 
     const gridContainer = document.getElementById("grid-container");
@@ -169,8 +176,10 @@
       });
     }
 
+    // Load widgets on page load
     loadWidgets();
 
+    // Initialize Sortable
     new Sortable(gridContainer, {
       animation: 150,
       handle: ".drag-handle",
@@ -181,22 +190,29 @@
           if (script) {
             try {
               const cfg = JSON.parse(script.textContent);
-              if (cfg.symbol) newOrder.push(cfg.symbol);
+              if (cfg.symbol && defaultSymbols.includes(cfg.symbol)) {
+                newOrder.push(cfg.symbol);
+              }
             } catch (e) {
               console.warn('Error parsing script content:', e);
             }
           }
         });
-        if (newOrder.length === symbols.length && newOrder.every(s => defaultSymbols.includes(s))) {
+        // Only update if the new order is valid
+        if (newOrder.length === defaultSymbols.length && newOrder.every(s => defaultSymbols.includes(s))) {
           symbols.length = 0;
           newOrder.forEach(s => symbols.push(s));
           try {
             localStorage.setItem('symbolOrder', JSON.stringify(symbols));
+            console.log('Saved order to localStorage:', symbols);
           } catch (e) {
             console.warn('Failed to save order to localStorage:', e);
           }
         } else {
-          console.warn('Invalid order detected, not saving to localStorage');
+          console.warn('Invalid order detected, reloading default widgets');
+          symbols = defaultSymbols.slice();
+          localStorage.setItem('symbolOrder', JSON.stringify(symbols));
+          loadWidgets();
         }
       }
     });

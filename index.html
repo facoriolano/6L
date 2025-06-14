@@ -73,41 +73,40 @@
           {"proName": "BITSTAMP:ETHUSD", "title": "Ethereum"},
           {"proName": "FX_IDC:USDBRL", "title": "USD/BRL"},
           {"proName": "DXY", "title": "Dólar Index"},
-          {"proName": "AMEX:EWZ", "title": "iShares MSCI"},
+          {"proName": "AMEX:EWZ", "title": "iShares MSCI Brazil"},
           {"proName": "NYSE:BLK", "title": "BlackRock"},
-          {"proName": "BLACKBULL:SNES2025"},
-          {"symbols": [
-            {"proName": "US02Y", "title": "US 2Y Yield"},
-            {"proName": "US10Y", "title": "US 10Y Yield"},
-            {"proName": "ACTIVTRADES:BRA50M2025", "title": "BRA50"},
-            {"proName": "US500.F", "title": "S&P 500 Index"},
-            {"proName": "US2000"},
-            {"proName": "NASDAQ:NDAQ"},
-            {"proName": "CRYPTOCAP:USDT.D"},
-            {"proName": "CRYPTOCAP:BTC.D"},
-            {"proName": "FX_IDC:JPYUSD"},
-            {"proName": "FX_IDC:GBPUSD"},
-            {"proName": "XAUUSD"},
-            {"proName": "TVC:USOIL"},
-            {"proName": "NYSE:VALE"},
-            {"proName": "NYSE:PBR"}
-          ],
+          {"proName": "BLACKBULL:US500.F", "title": "US500 Futures"},
+          {"proName": "US02Y", "title": "US 2Y Yield"},
+          {"proName": "US10Y", "title": "US 10Y Yield"},
+          {"proName": "ACTIVTRADES:BRA50M2025", "title": "BRA50M2025"},
+          {"proName": "US500.F", "title": "S&P 500 Index"},
+          {"proName": "US2000", "title": "Russell 2000"},
+          {"proName": "NASDAQ:NDAQ", "title": "Nasdaq Inc."},
+          {"proName": "CRYPTOCAP:USDT.D", "title": "USDT.D"},
+          {"proName": "CRYPTOCAP:BTC.D", "title": "BTC Dominance"},
+          {"proName": "FX_IDC:JPYUSD", "title": "JPY/USD"},
+          {"proName": "FX_IDC:GBPUSD", "title": "GBP/USD"},
+          {"proName": "XAUUSD", "title": "Gold"},
+          {"proName": "TVC:USOIL", "title": "Oil"},
+          {"proName": "NYSE:VALE", "title": "Vale"},
+          {"proName": "NYSE:PBR", "title": "Petrobras"}
+        ],
         "showSymbolLogo": true,
         "colorTheme": "dark",
         "isTransparent": false,
-        "targetMode": "generic",
-        "en": "en-US"
+        "displayMode": "adaptive",
+        "locale": "en"
       }
     </script>
   </div>
 
-  <!-- MINI-GRAPHICS -->
+  <!-- MINI-GRÁFICOS -->
   <div id="grid-container"></div>
 
   <!-- IFRAME -->
   <div class="iframe-container">
-    <iframe src="https://facoriolano.github.io/widget-tradingview/tvnews2.html" title="News"></iframe>
-    <iframe src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Heat Map"></iframe>
+    <iframe src="https://facoriolano.github.io/widget-tradingview/tvnews2.html" title="Notícias"></iframe>
+    <iframe src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Mapa de Calor"></iframe>
   </div>
 
   <!-- SORTABLE + WIDGET LOADER -->
@@ -115,36 +114,21 @@
   <script>
     // Default symbols list
     const defaultSymbols = [
-      "FOREXCOM:SPXUSD", "FOREXCOM:NUSD", "FX_IDC:USD",
-      "BITSTAMP:USD", "BITSTAMP:USD",
-      "USD", "DXY", "AMEX:DXY", "USD", "BLK",
-      "BLACKBULL:US500", "US02Y", "US10Y", "ACTIVTRADES:BRA50M2025",
-      "US500", "US2000", "USD:NDAQ", "CRYPTOCAP:USDT", "CRYPTOCAP:BTC",
-      "FX_IDC:JPYUSD", "FX_IDC:GBPUSD", "XAUUSD", "TVC:USOIL", "USD:VALE", "USD:PBR"
+      "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
+      "FX_IDC:USDBRL", "DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
+      "US02Y", "US10Y", "ACTIVTRADES:BRA50M2025", "US500.F", "US2000",
+      "NASDAQ:NDAQ", "CRYPTOCAP:USDT.D", "CRYPTOCAP:BTC.D", "FX_IDC:JPYUSD", "FX_IDC:GBPUSD",
+      "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
     ];
 
     // Load symbols from localStorage or use default
-    let symbols = [];
-    try {
-      const savedSymbols = localStorage.getItem('symbolOrder');
-      if (savedSymbols) {
-        const parsed = JSON.parse(savedSymbols);
-        if (Array.isArray(parsed) && parsed.length > 0 && parsed.every(s => typeof s === 'string')) {
-          symbols = parsed;
-        }
-      }
-    } catch (e) {
-      console.error('Error loading symbols from localStorage:', e);
-    }
-    // Fallback to default if symbols is empty or invalid
-    if (symbols.length === 0) {
-      symbols = [...defaultSymbols];
-    }
+    const savedOrder = localStorage.getItem('symbolOrder');
+    let symbols = savedOrder ? JSON.parse(savedOrder) : defaultSymbols;
 
     const gridContainer = document.getElementById("grid-container");
 
     function loadWidgets() {
-      gridContainer.innerHTML = ""; // Clear existing widgets
+      gridContainer.innerHTML = "";
       symbols.forEach(symbol => {
         const container = document.createElement("div");
         container.className = "tradingview-widget-container widget";
@@ -153,11 +137,6 @@
         handle.className = "drag-handle";
         handle.textContent = "⇅ Drag here";
         container.appendChild(handle);
-
-        // Create a div for the widget to ensure proper rendering
-        const widgetDiv = document.createElement("div");
-        widgetDiv.className = "tradingview-widget";
-        container.appendChild(widgetDiv);
 
         const script = document.createElement("script");
         script.type = "text/javascript";
@@ -179,10 +158,8 @@
       });
     }
 
-    // Load widgets on page load
     loadWidgets();
 
-    // Initialize Sortable
     new Sortable(gridContainer, {
       animation: 150,
       handle: ".drag-handle",
@@ -194,19 +171,12 @@
             try {
               const cfg = JSON.parse(script.textContent);
               if (cfg.symbol) newOrder.push(cfg.symbol);
-            } catch (e) {
-              console.error('Error parsing widget config:', e);
-            }
+            } catch {}
           }
         });
-        if (newOrder.length > 0) {
-          symbols = [...newOrder];
-          try {
-            localStorage.setItem('symbols', JSON.stringify(symbols));
-          } catch (e) {
-            console.error('Error saving symbols to localStorage:', e);
-          }
-        }
+        symbols.length = 0;
+        newOrder.forEach(s => symbols.push(s));
+        localStorage.setItem('symbolOrder', JSON.stringify(symbols));
       }
     });
   </script>

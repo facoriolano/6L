@@ -42,7 +42,6 @@
       user-select: none;
       flex-shrink: 0;
     }
-
     .sortable-chosen .drag-handle {
       cursor: grabbing;
     }
@@ -62,43 +61,42 @@
   </style>
 </head>
 <body>
-
   <!-- TICKER -->
   <div class="tradingview-widget-container" style="padding:10px;">
     <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-    {
-      "symbols": [
-        {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
-        {"proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100"},
-        {"proName": "FX_IDC:EURUSD", "title": "EUR/USD"},
-        {"proName": "BITSTAMP:BTCUSD", "title": "Bitcoin"},
-        {"proName": "BITSTAMP:ETHUSD", "title": "Ethereum"},
-        {"proName": "FX_IDC:USDBRL", "title": "USD/BRL"},
-        {"proName": "DXY", "title": "Dólar Index"},
-        {"proName": "AMEX:EWZ", "title": "iShares MSCI Brazil"},
-        {"proName": "NYSE:BLK", "title": "BlackRock"},
-        {"proName": "BLACKBULL:US500.F", "title": "US500 Futures"},
-        {"proName": "US02Y", "title": "US 2Y Yield"},
-        {"proName": "US10Y", "title": "US 10Y Yield"},
-        {"proName": "ACTIVTRADES:BRA50M2025", "title": "BRA50M2025"},
-        {"proName": "US500.F", "title": "S&P 500 Index"},
-        {"proName": "US2000", "title": "Russell 2000"},
-        {"proName": "NASDAQ:NDAQ", "title": "Nasdaq Inc."},
-        {"proName": "CRYPTOCAP:USDT.D", "title": "USDT.D"},
-        {"proName": "CRYPTOCAP:BTC.D", "title": "BTC Dominance"},
-        {"proName": "FX_IDC:JPYUSD", "title": "JPY/USD"},
-        {"proName": "FX_IDC:GBPUSD", "title": "GBP/USD"},
-        {"proName": "XAUUSD", "title": "Gold"},
-        {"proName": "TVC:USOIL", "title": "Oil"},
-        {"proName": "NYSE:VALE", "title": "Vale"},
-        {"proName": "NYSE:PBR", "title": "Petrobras"}
-      ],
-      "showSymbolLogo": true,
-      "colorTheme": "dark",
-      "isTransparent": false,
-      "displayMode": "adaptive",
-      "locale": "en"
-    }
+      {
+        "symbols": [
+          {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
+          {"proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100"},
+          {"proName": "FX_IDC:EURUSD", "title": "EUR/USD"},
+          {"proName": "BITSTAMP:BTCUSD", "title": "Bitcoin"},
+          {"proName": "BITSTAMP:ETHUSD", "title": "Ethereum"},
+          {"proName": "FX_IDC:USDBRL", "title": "USD/BRL"},
+          {"proName": "DXY", "title": "Dólar Index"},
+          {"proName": "AMEX:EWZ", "title": "iShares MSCI Brazil"},
+          {"proName": "NYSE:BLK", "title": "BlackRock"},
+          {"proName": "BLACKBULL:US500.F", "title": "US500 Futures"},
+          {"proName": "US02Y", "title": "US 2Y Yield"},
+          {"proName": "US10Y", "title": "US 10Y Yield"},
+          {"proName": "ACTIVTRADES:BRA50M2025", "title": "BRA50M2025"},
+          {"proName": "US500.F", "title": "S&P 500 Index"},
+          {"proName": "US2000", "title": "Russell 2000"},
+          {"proName": "NASDAQ:NDAQ", "title": "Nasdaq Inc."},
+          {"proName": "CRYPTOCAP:USDT.D", "title": "USDT.D"},
+          {"proName": "CRYPTOCAP:BTC.D", "title": "BTC Dominance"},
+          {"proName": "FX_IDC:JPYUSD", "title": "JPY/USD"},
+          {"proName": "FX_IDC:GBPUSD", "title": "GBP/USD"},
+          {"proName": "XAUUSD", "title": "Gold"},
+          {"proName": "TVC:USOIL", "title": "Oil"},
+          {"proName": "NYSE:VALE", "title": "Vale"},
+          {"proName": "NYSE:PBR", "title": "Petrobras"}
+        ],
+        "showSymbolLogo": true,
+        "colorTheme": "dark",
+        "isTransparent": false,
+        "displayMode": "adaptive",
+        "locale": "en"
+      }
     </script>
   </div>
 
@@ -111,9 +109,10 @@
     <iframe src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Mapa de Calor"></iframe>
   </div>
 
-  <!-- SORTABLE + SCRIPT -->
+  <!-- SORTABLE + WIDGET LOADER -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
+    // Default symbols list
     const defaultSymbols = [
       "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
       "FX_IDC:USDBRL", "DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
@@ -122,74 +121,64 @@
       "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
     ];
 
-    function getSavedOrder() {
-      try {
-        const saved = localStorage.getItem("symbolsOrder");
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length === defaultSymbols.length) {
-          return parsed;
-        }
-      } catch (e) {}
-      return defaultSymbols;
-    }
+    // Load symbols from localStorage or use default
+    let symbols = JSON.parse(localStorage.getItem('symbolOrder')) || defaultSymbols;
 
-    const symbols = getSavedOrder();
     const gridContainer = document.getElementById("grid-container");
-
-    function createWidget(symbol) {
-      const container = document.createElement("div");
-      container.className = "tradingview-widget-container widget";
-
-      const handle = document.createElement("div");
-      handle.className = "drag-handle";
-      handle.textContent = "⇅ Drag here";
-      container.appendChild(handle);
-
-      const script = document.createElement("script");
-      script.type = "text/javascript";
-      script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
-      script.innerHTML = JSON.stringify({
-        symbol: symbol,
-        width: "100%",
-        height: "100%",
-        locale: "en",
-        dateRange: "1D",
-        colorTheme: "dark",
-        isTransparent: false,
-        autosize: true
-      });
-
-      container.appendChild(script);
-      return container;
-    }
 
     function loadWidgets() {
       gridContainer.innerHTML = "";
       symbols.forEach(symbol => {
-        gridContainer.appendChild(createWidget(symbol));
+        const container = document.createElement("div");
+        container.className = "tradingview-widget-container widget";
+
+        const handle = document.createElement("div");
+        handle.className = "drag-handle";
+        handle.textContent = "⇅ Drag here";
+        container.appendChild(handle);
+
+        const script = document.createElement("script");
+        script.type = "text/javascript";
+        script.async = true;
+        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+        script.textContent = JSON.stringify({
+          symbol: symbol,
+          width: "100%",
+          height: "100%",
+          locale: "en",
+          dateRange: "1D",
+          colorTheme: "dark",
+          isTransparent: false,
+          autosize: true
+        });
+
+        container.appendChild(script);
+        gridContainer.appendChild(container);
       });
     }
 
+    // Load widgets on page load
     loadWidgets();
 
+    // Initialize Sortable
     new Sortable(gridContainer, {
       animation: 150,
       handle: ".drag-handle",
       onEnd: () => {
-        const newOrder = Array.from(gridContainer.children).map(widget => {
-          const script = widget.querySelector("script");
-          if (script && script.innerHTML) {
+        const newOrder = [];
+        gridContainer.querySelectorAll(".tradingview-widget-container").forEach(div => {
+          const script = div.querySelector("script");
+          if (script) {
             try {
-              return JSON.parse(script.innerHTML).symbol;
+              const cfg = JSON.parse(script.textContent);
+              if (cfg.symbol) newOrder.push(cfg.symbol);
             } catch {}
           }
-          return null;
-        }).filter(Boolean);
-
-        localStorage.setItem("symbolsOrder", JSON.stringify(newOrder));
+        });
+        // Update symbols array and save to localStorage
         symbols.length = 0;
-        symbols.push(...newOrder);
-        loadWidgets(); // recarrega os widgets com nova ordem, sem reload
+        newOrder.forEach(s => symbols.push(s));
+        localStorage.setItem('symbolOrder', JSON.stringify(symbols));
       }
     });
   </script>

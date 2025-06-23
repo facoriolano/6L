@@ -12,9 +12,10 @@
       font-family: Arial, sans-serif;
     }
 
+    /* Grid com 5 colunas fixas para 25 widgets */
     #grid-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(5, 1fr);
       gap: 10px;
       padding: 10px;
     }
@@ -98,7 +99,8 @@
       "FX_IDC:USDBRL", "DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
       "US02Y", "US10Y", "ACTIVTRADES:BRA50M2025", "US2000", "NASDAQ:NDAQ",
       "CRYPTOCAP:USDT.D", "CRYPTOCAP:BTC.D", "FX_IDC:JPYUSD", "FX_IDC:GBPUSD",
-      "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR", "CAPITALCOM:VIX"
+      "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR", "CAPITALCOM:VIX",
+      "TVC:VIX"  // 25º símbolo
     ];
 
     const gridContainer = document.getElementById("grid-container");

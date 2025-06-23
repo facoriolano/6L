@@ -14,6 +14,33 @@
     h1 {
       color: #0ff;
     }
+    <!-- Adiciona logo após o <h1> ou antes da tabela -->
+<section style="margin-top: 2rem;">
+  <h2>💱 Análise Intraday - USDBRL</h2>
+  <div id="usdb-chart" style="height: 400px;"></div>
+  <p>
+    O par <strong>USDBRL</strong> abriu o dia em leve alta, influenciado pelo DXY.
+    Caso o preço rompa <strong>5.45</strong>, o próximo alvo é <strong>5.48</strong>.
+    Se perder <strong>5.41</strong>, pode buscar <strong>5.38</strong>. <br>
+    Tendência: <span style="color: yellow;">Lateral com viés de alta</span>.
+  </p>
+</section>
+
+<!-- Script TradingView para USDBRL -->
+<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+<script type="text/javascript">
+  new TradingView.widget({
+    autosize: true,
+    symbol: "FX_IDC:USDBRL",
+    interval: "15",
+    timezone: "America/Sao_Paulo",
+    theme: "dark",
+    style: "1",
+    locale: "br",
+    toolbar_bg: "#111",
+    container_id: "usdb-chart"
+  });
+</script>
     table {
       width: 100%;
       border-collapse: collapse;

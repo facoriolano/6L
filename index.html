@@ -11,12 +11,14 @@
       color: #fff;
       font-family: Arial, sans-serif;
     }
+
     #grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 10px;
       padding: 10px;
     }
+
     .widget {
       position: relative;
       background-color: #111;
@@ -27,6 +29,7 @@
       display: flex;
       flex-direction: column;
     }
+
     .drag-handle {
       height: 24px;
       background: #222;
@@ -39,12 +42,18 @@
       user-select: none;
       flex-shrink: 0;
     }
+
+    .sortable-chosen .drag-handle {
+      cursor: grabbing;
+    }
+
     .iframe-container {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       padding: 10px;
     }
+
     .iframe-container iframe {
       flex: 1 1 48%;
       height: 800px;
@@ -88,7 +97,7 @@
         "colorTheme": "dark",
         "isTransparent": false,
         "displayMode": "adaptive",
-        "locale": "pt"
+        "locale": "en"
       }
     </script>
   </div>
@@ -96,7 +105,7 @@
   <!-- MINI-GRÁFICOS -->
   <div id="grid-container"></div>
 
-  <!-- IFRAMES -->
+  <!-- IFRAME -->
   <div class="iframe-container">
     <iframe src="https://facoriolano.github.io/widget-tradingview/tvnews2.html" title="Notícias"></iframe>
     <iframe src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Mapa de Calor"></iframe>
@@ -110,7 +119,7 @@
       "FX_IDC:USDBRL", "DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
       "US02Y", "US10Y", "ACTIVTRADES:BRA50M2025", "CAPITALCOM:VIX", "US2000",
       "NASDAQ:NDAQ", "CRYPTOCAP:USDT.D", "CRYPTOCAP:BTC.D", "FX_IDC:JPYUSD", "FX_IDC:GBPUSD",
-      "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
+      "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR", "CRYPTOCAP:TOTAL"
     ];
 
     const gridContainer = document.getElementById("grid-container");
@@ -123,39 +132,41 @@
       }
     } catch (e) { console.warn("Erro ao carregar localStorage", e); }
 
-    function loadWidgets() {
-      gridContainer.innerHTML = "";
-      symbols.forEach(symbol => {
-        const container = document.createElement("div");
-        container.className = "tradingview-widget-container widget";
-        container.dataset.symbol = symbol;
+    function loadWidgetsGradually(index = 0) {
+      if (index >= symbols.length) return;
 
-        const handle = document.createElement("div");
-        handle.className = "drag-handle";
-        handle.textContent = "⇅ Arraste aqui";
-        container.appendChild(handle);
+      const symbol = symbols[index];
+      const container = document.createElement("div");
+      container.className = "tradingview-widget-container widget";
+      container.dataset.symbol = symbol;
 
-        const script = document.createElement("script");
-        script.type = "text/javascript";
-        script.async = true;
-        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
-        script.textContent = JSON.stringify({
-          symbol: symbol,
-          width: "100%",
-          height: "100%",
-          locale: "pt",
-          dateRange: "1D",
-          colorTheme: "dark",
-          isTransparent: false,
-          autosize: true
-        });
+      const handle = document.createElement("div");
+      handle.className = "drag-handle";
+      handle.textContent = "⇅ Arraste aqui";
+      container.appendChild(handle);
 
-        container.appendChild(script);
-        gridContainer.appendChild(container);
+      const script = document.createElement("script");
+      script.type = "text/javascript";
+      script.async = true;
+      script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+      script.textContent = JSON.stringify({
+        symbol: symbol,
+        width: "100%",
+        height: "100%",
+        locale: "pt",
+        dateRange: "1D",
+        colorTheme: "dark",
+        isTransparent: false,
+        autosize: true
       });
+
+      container.appendChild(script);
+      gridContainer.appendChild(container);
+
+      setTimeout(() => loadWidgetsGradually(index + 1), 150);
     }
 
-    loadWidgets();
+    loadWidgetsGradually();
 
     new Sortable(gridContainer, {
       animation: 150,

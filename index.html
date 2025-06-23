@@ -62,42 +62,22 @@
   </style>
 </head>
 <body>
-
   <!-- TICKER -->
   <div class="tradingview-widget-container" style="padding:10px;">
     <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {
         "symbols": [
           {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
-          {"proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100"},
+          {"proName": "CAPITALCOM:VIX", "title": "VIX"},
           {"proName": "FX_IDC:EURUSD", "title": "EUR/USD"},
           {"proName": "BITSTAMP:BTCUSD", "title": "Bitcoin"},
-          {"proName": "BITSTAMP:ETHUSD", "title": "Ethereum"},
-          {"proName": "FX_IDC:USDBRL", "title": "USD/BRL"},
-          {"proName": "DXY", "title": "Dólar Index"},
-          {"proName": "AMEX:EWZ", "title": "iShares MSCI Brazil"},
-          {"proName": "NYSE:BLK", "title": "BlackRock"},
-          {"proName": "BLACKBULL:US500.F", "title": "US500 Futures"},
-          {"proName": "US02Y", "title": "US 2Y Yield"},
-          {"proName": "US10Y", "title": "US 10Y Yield"},
-          {"proName": "ACTIVTRADES:BRA50M2025", "title": "BRA50M2025"},
-          {"proName": "CAPITALCOM:VIX", "title": "VIX"},
-          {"proName": "US2000", "title": "Russell 2000"},
-          {"proName": "NASDAQ:NDAQ", "title": "Nasdaq Inc."},
-          {"proName": "CRYPTOCAP:USDT.D", "title": "USDT.D"},
-          {"proName": "CRYPTOCAP:BTC.D", "title": "BTC Dominance"},
-          {"proName": "FX_IDC:JPYUSD", "title": "JPY/USD"},
-          {"proName": "FX_IDC:GBPUSD", "title": "GBP/USD"},
-          {"proName": "XAUUSD", "title": "Gold"},
-          {"proName": "TVC:USOIL", "title": "Oil"},
-          {"proName": "NYSE:VALE", "title": "Vale"},
-          {"proName": "NYSE:PBR", "title": "Petrobras"}
+          {"proName": "FX_IDC:USDBRL", "title": "USD/BRL"}
         ],
         "showSymbolLogo": true,
         "colorTheme": "dark",
         "isTransparent": false,
         "displayMode": "adaptive",
-        "locale": "en"
+        "locale": "pt"
       }
     </script>
   </div>
@@ -111,31 +91,19 @@
     <iframe src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Mapa de Calor"></iframe>
   </div>
 
-  <!-- SORTABLE + WIDGET LOADER -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
     let symbols = [
       "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
       "FX_IDC:USDBRL", "DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
-      "US02Y", "US10Y", "ACTIVTRADES:BRA50M2025", "CAPITALCOM:VIX", "US2000",
-      "NASDAQ:NDAQ", "CRYPTOCAP:USDT.D", "CRYPTOCAP:BTC.D", "FX_IDC:JPYUSD", "FX_IDC:GBPUSD",
-      "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR", "CRYPTOCAP:TOTAL"
+      "US02Y", "US10Y", "ACTIVTRADES:BRA50M2025", "US2000", "NASDAQ:NDAQ",
+      "CRYPTOCAP:USDT.D", "CRYPTOCAP:BTC.D", "FX_IDC:JPYUSD", "FX_IDC:GBPUSD",
+      "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR", "CAPITALCOM:VIX"
     ];
 
     const gridContainer = document.getElementById("grid-container");
 
-    try {
-      const savedOrder = localStorage.getItem('widgetOrder');
-      if (savedOrder) {
-        const parsed = JSON.parse(savedOrder);
-        if (Array.isArray(parsed) && parsed.length > 0) symbols = parsed;
-      }
-    } catch (e) { console.warn("Erro ao carregar localStorage", e); }
-
-    function loadWidgetsGradually(index = 0) {
-      if (index >= symbols.length) return;
-
-      const symbol = symbols[index];
+    function createWidget(symbol) {
       const container = document.createElement("div");
       container.className = "tradingview-widget-container widget";
       container.dataset.symbol = symbol;
@@ -162,11 +130,25 @@
 
       container.appendChild(script);
       gridContainer.appendChild(container);
-
-      setTimeout(() => loadWidgetsGradually(index + 1), 150);
     }
 
-    loadWidgetsGradually();
+    function loadBatch(startIndex, count, callback) {
+      let i = startIndex;
+      function next() {
+        if (i < startIndex + count && i < symbols.length) {
+          createWidget(symbols[i]);
+          i++;
+          setTimeout(next, 200);
+        } else {
+          callback && callback();
+        }
+      }
+      next();
+    }
+
+    loadBatch(0, 13, () => {
+      loadBatch(13, symbols.length - 13);
+    });
 
     new Sortable(gridContainer, {
       animation: 150,

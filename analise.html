@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Análise Diária - Mini Gráficos</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+    }
+    h1 {
+      color: #0ff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2rem;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 0.5rem;
+      text-align: center;
+    }
+    th {
+      background-color: #222;
+    }
+    tr:hover {
+      background-color: #333;
+    }
+    .alta { color: #0f0; }
+    .baixa { color: #f00; }
+    .lateral { color: #ff0; }
+  </style>
+</head>
+<body>
+  <h1>📊 Análise Diária dos Mini Gráficos</h1>
+  <p>Fonte: <a href="https://facoriolano.github.io/6L/" target="_blank">Dashboard 6L</a></p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Ticker</th>
+        <th>Categoria</th>
+        <th>Tendência</th>
+        <th>Suporte</th>
+        <th>Resistência</th>
+        <th>Correlação BTC</th>
+        <th>Notas</th>
+      </tr>
+    </thead>
+    <tbody id="analise-body">
+      <!-- Dados serão preenchidos via JS -->
+    </tbody>
+  </table>
+
+  <script>
+    // Lista base com dados iniciais
+    const ativos = [
+      { ticker: 'BTCUSDT', categoria: 'Cripto', tendencia: 'alta', suporte: '65.000', resistencia: '72.000', correlacao: '-', notas: 'Volume crescente' },
+      { ticker: 'ETHUSDT', categoria: 'Cripto', tendencia: 'lateral', suporte: '3.400', resistencia: '3.800', correlacao: 'Alta', notas: 'Segue BTC' },
+      { ticker: 'SPX', categoria: 'Índice', tendencia: 'alta', suporte: '5.200', resistencia: '5.600', correlacao: 'Média', notas: 'Clima positivo' },
+      { ticker: 'DXY', categoria: 'Índice', tendencia: 'baixa', suporte: '104.0', resistencia: '106.0', correlacao: 'Inversa', notas: 'Ajuda cripto' },
+      { ticker: 'GOLD', categoria: 'Commodities', tendencia: 'alta', suporte: '2.300', resistencia: '2.450', correlacao: 'Inversa', notas: 'Refúgio' },
+      { ticker: 'BTC.D', categoria: 'Dominância', tendencia: 'alta', suporte: '-', resistencia: '-', correlacao: '-', notas: 'Alta pode pressionar alts' },
+      // Adicione mais ativos conforme necessário
+    ];
+
+    const tbody = document.getElementById('analise-body');
+
+    ativos.forEach(({ ticker, categoria, tendencia, suporte, resistencia, correlacao, notas }) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${ticker}</td>
+        <td>${categoria}</td>
+        <td class="${tendencia}">${tendencia.toUpperCase()}</td>
+        <td>${suporte}</td>
+        <td>${resistencia}</td>
+        <td>${correlacao}</td>
+        <td>${notas}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  </script>
+</body>
+</html>

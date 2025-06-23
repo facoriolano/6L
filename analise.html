@@ -14,33 +14,9 @@
     h1 {
       color: #0ff;
     }
-    <!-- Adiciona logo após o <h1> ou antes da tabela -->
-<section style="margin-top: 2rem;">
-  <h2>💱 Análise Intraday - USDBRL</h2>
-  <div id="usdb-chart" style="height: 400px;"></div>
-  <p>
-    O par <strong>USDBRL</strong> abriu o dia em leve alta, influenciado pelo DXY.
-    Caso o preço rompa <strong>5.45</strong>, o próximo alvo é <strong>5.48</strong>.
-    Se perder <strong>5.41</strong>, pode buscar <strong>5.38</strong>. <br>
-    Tendência: <span style="color: yellow;">Lateral com viés de alta</span>.
-  </p>
-</section>
-
-<!-- Script TradingView para USDBRL -->
-<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-<script type="text/javascript">
-  new TradingView.widget({
-    autosize: true,
-    symbol: "FX_IDC:USDBRL",
-    interval: "15",
-    timezone: "America/Sao_Paulo",
-    theme: "dark",
-    style: "1",
-    locale: "br",
-    toolbar_bg: "#111",
-    container_id: "usdb-chart"
-  });
-</script>
+    h2 {
+      color: #6cf;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -66,6 +42,17 @@
   <h1>📊 Análise Diária dos Mini Gráficos</h1>
   <p>Fonte: <a href="https://facoriolano.github.io/6L/" target="_blank">Dashboard 6L</a></p>
 
+  <section style="margin-top: 2rem;">
+    <h2>💱 Análise Intraday - USDBRL</h2>
+    <div id="usdb-chart" style="height: 400px;"></div>
+    <p>
+      O par <strong>USDBRL</strong> abriu o dia em leve alta, influenciado pelo DXY.
+      Caso o preço rompa <strong>5.45</strong>, o próximo alvo é <strong>5.48</strong>.
+      Se perder <strong>5.41</strong>, pode buscar <strong>5.38</strong>. <br>
+      Tendência: <span style="color: yellow;">Lateral com viés de alta</span>.
+    </p>
+  </section>
+
   <table>
     <thead>
       <tr>
@@ -83,7 +70,21 @@
     </tbody>
   </table>
 
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   <script>
+    // Gráfico interativo do USDBRL
+    new TradingView.widget({
+      autosize: true,
+      symbol: "FX_IDC:USDBRL",
+      interval: "15",
+      timezone: "America/Sao_Paulo",
+      theme: "dark",
+      style: "1",
+      locale: "br",
+      toolbar_bg: "#111",
+      container_id: "usdb-chart"
+    });
+
     // Lista base com dados iniciais
     const ativos = [
       { ticker: 'BTCUSDT', categoria: 'Cripto', tendencia: 'alta', suporte: '65.000', resistencia: '72.000', correlacao: '-', notas: 'Volume crescente' },
@@ -92,7 +93,7 @@
       { ticker: 'DXY', categoria: 'Índice', tendencia: 'baixa', suporte: '104.0', resistencia: '106.0', correlacao: 'Inversa', notas: 'Ajuda cripto' },
       { ticker: 'GOLD', categoria: 'Commodities', tendencia: 'alta', suporte: '2.300', resistencia: '2.450', correlacao: 'Inversa', notas: 'Refúgio' },
       { ticker: 'BTC.D', categoria: 'Dominância', tendencia: 'alta', suporte: '-', resistencia: '-', correlacao: '-', notas: 'Alta pode pressionar alts' },
-      // Adicione mais ativos conforme necessário
+      { ticker: 'USDBRL', categoria: 'Moeda', tendencia: 'lateral', suporte: '5.41', resistencia: '5.48', correlacao: 'Inversa DXY', notas: 'Gráfico incluído acima' }
     ];
 
     const tbody = document.getElementById('analise-body');

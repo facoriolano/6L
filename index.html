@@ -42,6 +42,7 @@
       user-select: none;
       flex-shrink: 0;
     }
+
     .sortable-chosen .drag-handle {
       cursor: grabbing;
     }
@@ -113,19 +114,16 @@
   <!-- SORTABLE + WIDGET LOADER -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
-    // Ordem padrão dos widgets.
     let symbols = [
       "FOREXCOM:SPXUSD", "FOREXCOM:NSXUSD", "FX_IDC:EURUSD", "BITSTAMP:BTCUSD", "BITSTAMP:ETHUSD",
       "FX_IDC:USDBRL", "DXY", "AMEX:EWZ", "NYSE:BLK", "BLACKBULL:US500.F",
       "US02Y", "US10Y", "ACTIVTRADES:BRA50M2025", "TVC:VIX", "US2000",
       "NASDAQ:NDAQ", "CRYPTOCAP:USDT.D", "CRYPTOCAP:BTC.D", "FX_IDC:JPYUSD", "FX_IDC:GBPUSD",
-      "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR", "TVC:VIX"
+      "XAUUSD", "TVC:USOIL", "NYSE:VALE", "NYSE:PBR"
     ];
 
     const gridContainer = document.getElementById("grid-container");
 
-    // --- CARREGAMENTO SEGURO DO LOCALSTORAGE ---
-    // Esta parte tenta carregar a ordem salva. Se falhar, usa a ordem padrão sem quebrar a página.
     try {
       const savedOrderJSON = localStorage.getItem('widgetOrder');
       if (savedOrderJSON) {
@@ -138,14 +136,13 @@
     } catch (error) {
       console.error("Erro ao carregar a ordem do LocalStorage. Usando ordem padrão.", error);
     }
-    
-    // Função para criar os widgets na tela com base na ordem do array 'symbols'
+
     function loadWidgets() {
       gridContainer.innerHTML = "";
       symbols.forEach(symbol => {
         const container = document.createElement("div");
         container.className = "tradingview-widget-container widget";
-        container.dataset.symbol = symbol; // Atributo para fácil identificação
+        container.dataset.symbol = symbol;
 
         const handle = document.createElement("div");
         handle.className = "drag-handle";
@@ -160,7 +157,7 @@
           symbol: symbol,
           width: "100%",
           height: "100%",
-          locale: "pt", // Alterado para português
+          locale: "pt",
           dateRange: "1D",
           colorTheme: "dark",
           isTransparent: false,
@@ -172,22 +169,14 @@
       });
     }
 
-    // Carrega os widgets assim que a página abre
     loadWidgets();
 
-    // Inicializa a biblioteca SortableJS para permitir arrastar e soltar
     new Sortable(gridContainer, {
       animation: 150,
       handle: ".drag-handle",
-      // Função que é executada quando você solta um widget
       onEnd: () => {
-        // Pega a nova ordem dos widgets diretamente do HTML
         const newOrder = Array.from(gridContainer.querySelectorAll(".widget")).map(div => div.dataset.symbol);
-        
-        // Atualiza a ordem no array em memória
         symbols = newOrder;
-
-        // --- SALVANDO A NOVA ORDEM NO LOCALSTORAGE ---
         localStorage.setItem('widgetOrder', JSON.stringify(newOrder));
         console.log("Nova ordem salva no LocalStorage.");
       }

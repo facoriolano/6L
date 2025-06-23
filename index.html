@@ -58,9 +58,23 @@
       height: 800px;
       border: none;
     }
+
+    .reset-button {
+      margin: 10px;
+      padding: 8px 16px;
+      background: #222;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
+
+  <!-- BOTÃO DE RESET -->
+  <button onclick="resetWidgetOrder()" class="reset-button">🔁 Resetar Ordem dos Gráficos</button>
 
   <!-- TICKER -->
   <div class="tradingview-widget-container" style="padding:10px;">
@@ -113,61 +127,36 @@
   <!-- SORTABLE + WIDGET LOADER -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
-    
     // ORDEM DOS WIDGETS
-let symbols = [
-  "FX_IDC:USDBRL",
-  "DXY",
-  "CAPITALCOM:VIX",
-  "ACTIVTRADES:BRA50",
-  "AMEX:EWZ",
-  "NYSE:PBR",
-  "NYSE:VALE",
-  "BITSTAMP:BTCUSD",
-  "CRYPTOCAP:USDT.D",
-  "US500.F",
-  "FOREXCOM:SPXUSD", 
-  "NASDAQ:NDAQ",
-  "BLACKBULL:NAS100",
-  "US2000",
-  "US02Y",
-  "US10Y",
-  "XAUUSD",
-  "TVC:USOIL",
-  "FX_IDC:JPYUSD",
-  "FX_IDC:EURUSD",
-  "FX_IDC:GBPUSD",
-  "NYSE:BLK",
-  "BITSTAMP:ETHUSD",
-  "BINANCE:SOLUSD",
-  "SOL"  // <- válido como "Market Cap SOL"
-];
-
+    let symbols = [
+      "FX_IDC:USDBRL", "DXY", "CAPITALCOM:VIX", "ACTIVTRADES:BRA50", "AMEX:EWZ",
+      "NYSE:PBR", "NYSE:VALE", "BITSTAMP:BTCUSD", "CRYPTOCAP:USDT.D", "US500.F",
+      "FOREXCOM:SPXUSD", "NASDAQ:NDAQ", "BLACKBULL:NAS100", "US2000", "US02Y",
+      "US10Y", "XAUUSD", "TVC:USOIL", "FX_IDC:JPYUSD", "FX_IDC:EURUSD",
+      "FX_IDC:GBPUSD", "NYSE:BLK", "BITSTAMP:ETHUSD", "BINANCE:SOLUSD", "SOL"
+    ];
 
     const gridContainer = document.getElementById("grid-container");
 
-    // --- CARREGAMENTO SEGURO DO LOCALSTORAGE ---
-    // Esta parte tenta carregar a ordem salva. Se falhar, usa a ordem padrão sem quebrar a página.
     try {
       const savedOrderJSON = localStorage.getItem('widgetOrder');
       if (savedOrderJSON) {
         const savedSymbols = JSON.parse(savedOrderJSON);
         if (Array.isArray(savedSymbols) && savedSymbols.length > 0) {
-            symbols = savedSymbols;
-            console.log("Ordem dos widgets carregada com sucesso do LocalStorage.");
+          symbols = savedSymbols;
+          console.log("Ordem dos widgets carregada com sucesso do LocalStorage.");
         }
       }
     } catch (error) {
       console.error("Erro ao carregar a ordem do LocalStorage. Usando ordem padrão.", error);
     }
-    
-    // Função para criar os widgets na tela com base na ordem do array 'symbols'
+
     function loadWidgets() {
       gridContainer.innerHTML = "";
       symbols.forEach(symbol => {
         const container = document.createElement("div");
         container.className = "tradingview-widget-container widget";
-        container.dataset.symbol = symbol; // Atributo para fácil identificação
+        container.dataset.symbol = symbol;
 
         const handle = document.createElement("div");
         handle.className = "drag-handle";
@@ -182,7 +171,7 @@ let symbols = [
           symbol: symbol,
           width: "100%",
           height: "100%",
-          locale: "pt", // Alterado para português
+          locale: "pt",
           dateRange: "1D",
           colorTheme: "dark",
           isTransparent: false,
@@ -194,26 +183,26 @@ let symbols = [
       });
     }
 
-    // Carrega os widgets assim que a página abre
     loadWidgets();
 
-    // Inicializa a biblioteca SortableJS para permitir arrastar e soltar
     new Sortable(gridContainer, {
       animation: 150,
       handle: ".drag-handle",
-      // Função que é executada quando você solta um widget
       onEnd: () => {
-        // Pega a nova ordem dos widgets diretamente do HTML
         const newOrder = Array.from(gridContainer.querySelectorAll(".widget")).map(div => div.dataset.symbol);
-        
-        // Atualiza a ordem no array em memória
         symbols = newOrder;
-
-        // --- SALVANDO A NOVA ORDEM NO LOCALSTORAGE ---
         localStorage.setItem('widgetOrder', JSON.stringify(newOrder));
         console.log("Nova ordem salva no LocalStorage.");
       }
     });
+
+    // Função do botão para resetar ordem
+    function resetWidgetOrder() {
+      if (confirm("Tem certeza que deseja resetar a ordem dos gráficos? A página será recarregada.")) {
+        localStorage.removeItem('widgetOrder');
+        location.reload();
+      }
+    }
   </script>
 </body>
 </html>

@@ -4,99 +4,94 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fabricio - Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
-      background-color: #0d0d0f;
+      background-color: #000;
       color: #fff;
-      font-family: 'Inter', sans-serif;
+      font-family: Arial, sans-serif;
     }
 
-    /* GRID DE MINI-GRÁFICOS */
+    /* GRID PRINCIPAL */
     #grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 15px;
-      padding: 15px;
+      gap: 10px;
+      padding: 10px;
     }
 
-    /* CARD DO WIDGET */
+    /* WIDGETS */
     .widget {
-      background: #16161a;
-      border-radius: 14px;
+      position: relative;
+      background-color: #111;
+      border-radius: 10px;
       overflow: hidden;
       user-select: none;
-      min-height: 220px;
+      min-height: 200px;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      animation: fadeIn 0.6s ease forwards;
-    }
-    .widget:hover {
-      transform: scale(1.01);
-      box-shadow: 0 8px 25px rgba(0,255,213,0.15);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    /* BARRA DE ARRASTE */
+    .widget:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8);
+    }
+
+    /* BARRA DE ARRASTAR */
     .drag-handle {
-      height: 26px;
-      background: #1f1f23;
+      height: 24px;
+      background: #1c1c1c;
       cursor: grab;
       display: flex;
       align-items: center;
       padding: 0 10px;
       font-size: 12px;
       color: #aaa;
-      user-select: none;
       flex-shrink: 0;
-      font-family: 'Orbitron', sans-serif;
-      letter-spacing: 1px;
     }
+
     .sortable-chosen .drag-handle {
       cursor: grabbing;
     }
 
-    /* CONTAINERS DE IFRAMES */
+    /* IFRAME CONTAINER */
     .iframe-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 15px;
-      padding: 15px;
-    }
-    .iframe-container iframe {
-      flex: 1 1 48%;
-      min-height: 800px;
-      border: none;
-      border-radius: 14px;
-      background: #16161a;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      gap: 10px;
+      padding: 10px;
     }
 
-    /* BOTÃO RESET */
+    .iframe-container iframe {
+      flex: 1 1 48%;
+      min-width: 300px;
+      height: 800px;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      background-color: #111;
+    }
+
+    /* BOTÃO DE RESET */
     .reset-button-container {
       text-align: right;
-      padding: 0 20px 10px;
+      padding: 0 12px 5px;
     }
+
     .reset-button {
-      background: linear-gradient(90deg, #00ffd5, #0088ff);
-      color: #000;
+      background: none;
+      color: #aaa;
       border: none;
       cursor: pointer;
       font-size: 12px;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-weight: bold;
-      transition: opacity 0.3s ease;
-    }
-    .reset-button:hover {
-      opacity: 0.8;
+      text-decoration: underline;
+      transition: color 0.2s ease;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .reset-button:hover {
+      color: #fff;
     }
   </style>
 </head>
@@ -151,7 +146,7 @@
 
   <!-- IFRAME: NOTÍCIAS e MAPA DE CALOR -->
   <div class="iframe-container">
-    <iframe src="https://www.tradingview.com/news-flow/20rmAGWi?symbol=FX_IDC:USDBRL" title="Notícias"></iframe>
+    <iframe src="https://facoriolano.github.io/widget-tradingview/tvnews2.html" title="Notícias"></iframe>
     <iframe src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Mapa de Calor"></iframe>
   </div>
 
@@ -177,7 +172,7 @@
         }
       }
     } catch (error) {
-      console.error("Erro ao carregar ordem do LocalStorage:", error);
+      console.error("Erro ao carregar ordem do LocalStorage.", error);
     }
 
     function loadWidgets() {

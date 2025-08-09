@@ -4,35 +4,45 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fabricio - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
-      background-color: #000;
+      background-color: #0d0d0f;
       color: #fff;
-      font-family: Arial, sans-serif;
+      font-family: 'Inter', sans-serif;
     }
 
+    /* GRID DE MINI-GRÁFICOS */
     #grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 10px;
-      padding: 10px;
+      gap: 15px;
+      padding: 15px;
     }
 
+    /* CARD DO WIDGET */
     .widget {
-      position: relative;
-      background-color: #111;
-      border-radius: 5px;
+      background: #16161a;
+      border-radius: 14px;
       overflow: hidden;
       user-select: none;
-      min-height: 200px;
+      min-height: 220px;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeIn 0.6s ease forwards;
+    }
+    .widget:hover {
+      transform: scale(1.01);
+      box-shadow: 0 8px 25px rgba(0,255,213,0.15);
     }
 
+    /* BARRA DE ARRASTE */
     .drag-handle {
-      height: 24px;
-      background: #222;
+      height: 26px;
+      background: #1f1f23;
       cursor: grab;
       display: flex;
       align-items: center;
@@ -41,41 +51,52 @@
       color: #aaa;
       user-select: none;
       flex-shrink: 0;
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 1px;
     }
-
     .sortable-chosen .drag-handle {
       cursor: grabbing;
     }
 
+    /* CONTAINERS DE IFRAMES */
     .iframe-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      padding: 10px;
+      gap: 15px;
+      padding: 15px;
     }
-
     .iframe-container iframe {
       flex: 1 1 48%;
-      height: 800px;
+      min-height: 800px;
       border: none;
+      border-radius: 14px;
+      background: #16161a;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
 
+    /* BOTÃO RESET */
     .reset-button-container {
       text-align: right;
-      padding: 0 12px 5px;
+      padding: 0 20px 10px;
     }
-
     .reset-button {
-      background: none;
-      color: #aaa;
+      background: linear-gradient(90deg, #00ffd5, #0088ff);
+      color: #000;
       border: none;
       cursor: pointer;
       font-size: 12px;
-      text-decoration: underline;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: opacity 0.3s ease;
+    }
+    .reset-button:hover {
+      opacity: 0.8;
     }
 
-    .reset-button:hover {
-      color: #fff;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -123,21 +144,20 @@
   <!-- MINI-GRÁFICOS -->
   <div id="grid-container"></div>
 
-  <!-- BOTÃO DE RESET (acima dos iframes) -->
+  <!-- BOTÃO DE RESET -->
   <div class="reset-button-container">
     <button class="reset-button" onclick="resetWidgetOrder()">🔁 Resetar Ordem</button>
   </div>
 
   <!-- IFRAME: NOTÍCIAS e MAPA DE CALOR -->
   <div class="iframe-container">
-    <iframe src="https://facoriolano.github.io/widget-tradingview/tvnews2.html" title="Notícias"></iframe>
+    <iframe src="https://www.tradingview.com/news-flow/20rmAGWi?symbol=FX_IDC:USDBRL" title="Notícias"></iframe>
     <iframe src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Mapa de Calor"></iframe>
   </div>
 
   <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
-    // ORDEM DOS WIDGETS
     let symbols = [
       "FX_IDC:USDBRL", "FXOPEN:DXY", "US10Y", "AMEX:EWZ", "ACTIVTRADES:BRA50",
       "NYSE:PBR", "NYSE:VALE", "CAPITALCOM:VIX", "BITSTAMP:BTCUSD", "CRYPTOCAP:USDT.D", "US500.F",
@@ -154,11 +174,10 @@
         const savedSymbols = JSON.parse(savedOrderJSON);
         if (Array.isArray(savedSymbols) && savedSymbols.length > 0) {
           symbols = savedSymbols;
-          console.log("Ordem dos widgets carregada com sucesso do LocalStorage.");
         }
       }
     } catch (error) {
-      console.error("Erro ao carregar a ordem do LocalStorage. Usando ordem padrão.", error);
+      console.error("Erro ao carregar ordem do LocalStorage:", error);
     }
 
     function loadWidgets() {
@@ -202,7 +221,6 @@
         const newOrder = Array.from(gridContainer.querySelectorAll(".widget")).map(div => div.dataset.symbol);
         symbols = newOrder;
         localStorage.setItem('widgetOrder', JSON.stringify(newOrder));
-        console.log("Nova ordem salva no LocalStorage.");
       }
     });
 

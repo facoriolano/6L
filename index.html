@@ -344,12 +344,13 @@
                     symbol: symbol,
                     width: "100%",
                     height: "100%",
-                    // locale: "pt" REMOVIDO/DEIXADO NO PADRÃO (en) para minimizar texto extra.
-                    dateRange: "1D", 
-                    colorTheme: "dark",
-                    isTransparent: false,
-                    autosize: true,
-                    interval: "D", // diário
+                   // locale: "pt" // REMOVIDO para manter padrão "en"
+                    dateRange: "1D", // mostra apenas o dia atual ou último pregão
+                    colorTheme: "dark", // tema escuro
+                    isTransparent: false, // fundo opaco
+                    autosize: true, // se ajusta automaticamente ao container
+                    interval: "D", // intervalo diário (cada vela representa 1 dia)
+
 
                 });
 

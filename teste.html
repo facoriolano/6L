@@ -9,12 +9,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    /* Global font */
     body {
       font-family: 'Inter', sans-serif;
     }
 
-    /* Grid container fluid + padding controlado */
+    /* Grid container */
     #grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -30,9 +29,12 @@
       border-radius: 0.75rem;
       background-color: #0a0a0a;
       border: none;
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+      box-shadow:
+        0 10px 15px -3px rgba(0,0,0,0.1),
+        0 4px 6px -2px rgba(0,0,0,0.05);
       transition: transform 0.3s ease-in-out, box-shadow 0.15s ease-in-out;
       overflow: hidden;
+      position: relative;
     }
 
     .widget:active {
@@ -40,7 +42,7 @@
       transform: scale(1.005);
     }
 
-    /* Conteúdo interno do widget (iframe) */
+    /* Conteúdo interno do widget */
     .widget-content {
       width: 100%;
       height: 100%;
@@ -164,8 +166,11 @@
   <!-- Content main -->
   <main class="p-4 space-y-4">
 
-    <!-- GRID DE WIDGETS -->
-    <div id="grid-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 md:gap-4"></div>
+    <!-- GRID DE MINI-GRÁFICOS (aqui estão os mini-symbols) -->
+    <div id="grid-container"
+         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
+      <!-- Os mini-gráficos serão carregados aqui pelo JS -->
+    </div>
 
     <!-- NOTÍCIAS E HEATMAP -->
     <div class="flex flex-col lg:flex-row gap-4">
@@ -211,7 +216,7 @@
       getDoc
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // --- CONFIGURAÇÕES GLOBAIS ---
+    // --- CONSTANTES ---
     const initialSymbols = [
       "FX_IDC:USDBRL", "FXOPEN:DXY", "US10Y", "AMEX:EWZ", "ACTIVTRADES:BRA50",
       "NYSE:PBR", "NYSE:VALE", "CAPITALCOM:VIX", "BITSTAMP:BTCUSD", "CRYPTOCAP:USDT.D", "US500.F",
@@ -276,10 +281,8 @@
       }
     }
 
-    // --- CRIAR WIDGET DINAMICAMENTE (com altura configurável) ---
-    function createWidget(symbol, config = {}) {
-      const { height = 200, cols = 1 } = config; // altura em px e colunas que ocupa
-
+    // --- CRIAR MINI-GRÁFICO (mini-symbol-overview) DINÂMICO ---
+    function createMiniChart(symbol, height = 200, cols = 1) {
       const widget = document.createElement("div");
       widget.className = "widget bg-neutral-950 rounded-xl shadow-lg transition transform hover:scale-[1.01] hover:shadow-xl hover:shadow-accent/20 duration-300";
       widget.dataset.symbol = symbol;
@@ -295,15 +298,17 @@
       script.async = true;
       script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
 
-      script.textContent = JSON.stringify({
+      // Config do widget
+      script.text = JSON.stringify({
         symbol,
         width: "100%",
         height: "100%",
+        locale: "en",
+        dateRange: "1D",
         colorTheme: "dark",
         isTransparent: false,
-        dateRange: "1D",
-        interval: "D",
-        autosize: true
+        autosize: true,
+        interval: "D"
       });
 
       content.appendChild(script);
@@ -313,29 +318,26 @@
       return widget;
     }
 
-    function loadWidgets() {
+    function loadMiniCharts() {
       gridContainer.innerHTML = "";
 
-      // Exemplo de widgets com altura e coluna customizada
-      const layout = [
-        { symbol: "FX_IDC:USDBRL", height: 200, cols: 1 },
-        { symbol: "BITSTAMP:BTCUSD", height: 220, cols: 1 },
-        { symbol: "US10Y", height: 200, cols: 1 },
-        { symbol: "US500.F", height: 200, cols: 2 },
-        { symbol: "NASDAQ:NDAQ", height: 200, cols: 1 },
-        { symbol: "XAUUSD", height: 200, cols: 1 },
-        { symbol: "TVC:USOIL", height: 200, cols: 1 },
-        { symbol: "NYSE:VALE", height: 200, cols: 1 },
-        { symbol: "NYSE:PBR", height: 200, cols: 1 },
-        { symbol: "FOREXCOM:SPXUSD", height: 200, cols: 2 }
-      ];
+      // Aqui você pode ajustar height/cols por símbolo, se quiser
+      const layout = symbols.map(symbol => {
+        let height = 200;
+        let cols = 1;
 
-      layout.forEach(({ symbol, height, cols }) => {
-        createWidget(symbol, { height, cols });
+        // Exemplo: alguns símbolos com altura ou coluna diferente
+        if (symbol === "US10Y" || symbol === "US500.F") {
+          height = 220;
+          cols = 1;
+        }
+
+        return { symbol, height, cols };
       });
 
-      // Se quiser, use o `symbols` carregado do Firestore para manter ordem
-      // ou sinônimo, você pode reordenar `layout` conforme `symbols` se quiser.
+      layout.forEach(({ symbol, height, cols }) => {
+        createMiniChart(symbol, height, cols);
+      });
     }
 
     function initializeSortable() {
@@ -344,7 +346,8 @@
         handle: ".widget",
         ghostClass: "sortable-ghost",
         onEnd: () => {
-          const newOrder = Array.from(gridContainer.querySelectorAll(".widget")).map(w => w.dataset.symbol);
+          const newOrder = Array.from(gridContainer.querySelectorAll(".widget"))
+            .map(w => w.dataset.symbol);
           symbols = newOrder;
           saveWidgetOrder(newOrder);
         }
@@ -368,4 +371,44 @@
         await saveWidgetOrder(initialSymbols);
         localStorage.removeItem('widgetOrder');
         resetButton.disabled = true;
-        resetButton.innerHTML += '<span id
+        resetButton.innerHTML += '<span id="feedback" class="text-xl">✅</span>';
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      };
+    };
+
+    // --- INICIALIZAÇÃO DO FIREBASE E DASHBOARD ---
+    async function initializeDashboard() {
+      if (!firebaseConfig) {
+        console.warn("Configuração do Firebase ausente. Carregando widgets sem persistência.");
+        loadMiniCharts();
+        initializeSortable();
+        return;
+      }
+
+      try {
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+
+        if (initialAuthToken) {
+          await signInWithCustomToken(auth, initialAuthToken);
+        } else {
+          await signInAnonymously(auth);
+        }
+
+        const user = auth.currentUser;
+        if (user) {
+          userId = user.uid;
+          isAuthReady = true;
+
+          await loadSavedOrder();
+          loadMiniCharts();
+          initializeSortable();
+        } else {
+          console.error("Falha ao obter usuário. Carregando ordem inicial.");
+          loadMiniCharts();
+          initializeSortable();
+        }
+      }

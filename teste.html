@@ -9,12 +9,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    /* Configuração de Fonte Global */
     body {
       font-family: 'Inter', sans-serif;
     }
 
-    /* Container externo do widget */
     .widget {
       min-height: auto !important;
       height: auto;
@@ -22,21 +20,19 @@
       padding: 0;
     }
 
-    /* Wrapper do widget (altura e layout) */
     .widget-wrapper {
       width: 100%;
-      height: 200px; /* MANTIDA em 200px para mini-symbol-overview */
-      border-radius: 0.75rem; /* rounded-xl */
+      height: 200px;
+      border-radius: 0.75rem;
       box-shadow:
-        0 10px 15px -3px rgba(0, 0, 0, 0.1),
-        0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        0 10px 15px -3px rgba(0,0,0,0.1),
+        0 4px 6px -2px rgba(0,0,0,0.05);
       transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
       position: relative;
       background-color: #0a0a0a;
       border: none;
     }
 
-    /* Conteúdo interno do widget */
     .widget-content {
       flex-grow: 1;
       padding: 0;
@@ -45,7 +41,6 @@
       overflow: hidden;
     }
 
-    /* iframe interno */
     .widget-content iframe {
       width: 100%;
       height: 100%;
@@ -56,7 +51,6 @@
       padding: 0 !important;
     }
 
-    /* Sortable ghost */
     .sortable-ghost {
       opacity: 0.4;
       background-color: #334155;
@@ -67,7 +61,6 @@
       cursor: grabbing;
     }
 
-    /* Tooltip */
     .tooltip {
       position: relative;
       display: inline-block;
@@ -128,28 +121,19 @@
 <body class="bg-neutral-950 text-gray-100 min-h-screen">
 
   <!-- Modal de confirmação -->
-  <div id="confirmModal"
-       class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center z-50 transition-opacity duration-300">
+  <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center z-50 transition-opacity duration-300">
     <div class="bg-slate-900 p-6 rounded-xl shadow-2xl w-80 border border-slate-700">
       <p class="text-white text-lg font-semibold mb-6">Deseja realmente resetar a ordem dos gráficos?</p>
       <div class="flex justify-end space-x-3">
-        <button id="cancelReset"
-                class="px-4 py-2 bg-slate-700 text-gray-300 rounded-lg hover:bg-slate-600 transition">
-          Cancelar
-        </button>
-        <button id="confirmReset"
-                class="px-4 py-2 bg-black text-gray-300 rounded-lg border border-slate-700 hover:bg-slate-800 transition">
-          Confirmar
-        </button>
+        <button id="cancelReset" class="px-4 py-2 bg-slate-700 text-gray-300 rounded-lg hover:bg-slate-600 transition">Cancelar</button>
+        <button id="confirmReset" class="px-4 py-2 bg-black text-gray-300 rounded-lg border border-slate-700 hover:bg-slate-800 transition">Confirmar</button>
       </div>
     </div>
   </div>
 
   <!-- Ticker Tape -->
   <div class="tradingview-widget-container p-3 sm:p-4 border-b border-slate-700">
-    <script type="text/javascript"
-            src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js"
-            async>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
       {
         "symbols": [
           {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
@@ -186,58 +170,33 @@
     </script>
   </div>
 
-  <!-- Conteúdo principal -->
   <main class="p-4 space-y-4">
 
-    <!-- MINI-GRÁFICOS (GRID ORIGINAL COM TODOS OS WIDGETS) -->
-    <div id="grid-container"
-         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px">
-      <!-- Os mini-symbols serão carregados aqui pelo JavaScript -->
+    <!-- MINI-GRÁFICOS (GRID SIMPLES SEM ALTERAÇÕES) -->
+    <div id="grid-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px">
+      <!-- Os mini-symbol-overview serão carregados aqui pelo JS -->
     </div>
 
-    <!-- IFRAMES: NOTÍCIAS E HEATMAP -->
+    <!-- NOTÍCIAS E HEATMAP -->
     <div class="flex flex-col lg:flex-row gap-4">
-
-      <!-- Noticias -->
       <div class="flex-1 bg-neutral-950 rounded-xl shadow-lg transition hover:shadow-xl hover:shadow-accent/20 duration-300 min-h-[600px] lg:min-h-[800px] flex flex-col">
-        <div class="p-1 bg-neutral-950 rounded-t-xl text-lg font-semibold text-gray-300 border-b border-slate-700 flex-shrink-0">
-          Notícias e Calendário
-        </div>
-        <iframe
-          class="w-full h-full flex-grow"
-          src="https://facoriolano.github.io/widget-tradingview/tvnews2.html"
-          title="Notícias">
-        </iframe>
+        <div class="p-1 bg-neutral-950 rounded-t-xl text-lg font-semibold text-gray-300 border-b border-slate-700 flex-shrink-0">Notícias e Calendário</div>
+        <iframe class="w-full h-full flex-grow" src="https://facoriolano.github.io/widget-tradingview/tvnews2.html" title="Notícias"></iframe>
       </div>
-
-      <!-- Heatmap -->
       <div class="flex-1 bg-neutral-950 rounded-xl shadow-lg transition hover:shadow-xl hover:shadow-accent/20 duration-300 min-h-[600px] lg:min-h-[800px] flex flex-col">
-        <div class="p-1 bg-neutral-950 rounded-t-xl text-lg font-semibold text-gray-300 border-b border-slate-700 flex-shrink-0">
-          Mapa de Calor (Heatmap)
-        </div>
-        <iframe
-          class="w-full h-full flex-grow"
-          src="https://facoriolano.github.io/widget-tradingview/heat1.html"
-          title="Mapa de Calor">
-        </iframe>
+        <div class="p-1 bg-neutral-950 rounded-t-xl text-lg font-semibold text-gray-300 border-b border-slate-700 flex-shrink-0">Mapa de Calor (Heatmap)</div>
+        <iframe class="w-full h-full flex-grow" src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Mapa de Calor"></iframe>
       </div>
     </div>
   </main>
 
-  <!-- FAB de Reset -->
+  <!-- FAB de reset -->
   <div class="fixed bottom-6 right-6 z-40 tooltip">
-    <button id="resetButton"
-            onclick="window.resetWidgetOrder()"
+    <button id="resetButton" onclick="window.resetWidgetOrder()"
             class="p-3 text-lg font-medium text-gray-400 bg-slate-800 rounded-full border border-slate-700 shadow-xl 
                    hover:text-white hover:bg-slate-700 transition duration-150 ease-in-out hover:scale-110">
-      <svg xmlns="http://www.w3.org/2000/svg"
-           class="h-6 w-6 text-gray-300"
-           fill="none"
-           viewBox="0 0 24 24"
-           stroke="currentColor"
-           stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0h5m-5 0L7.171 7.171m0 0L4 4" />
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0h5m-5 0L7.171 7.171m0 0L4 4" />
       </svg>
     </button>
     <span class="tooltiptext">Resetar Ordem dos Gráficos</span>
@@ -251,7 +210,6 @@
     import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // --- CONSTANTES E VARIÁVEIS GLOBAIS ---
     const initialSymbols = [
       "FX_IDC:USDBRL", "FXOPEN:DXY", "US10Y", "AMEX:EWZ", "ACTIVTRADES:BRA50",
       "NYSE:PBR", "NYSE:VALE", "CAPITALCOM:VIX", "BITSTAMP:BTCUSD", "CRYPTOCAP:USDT.D", "US500.F",
@@ -275,7 +233,6 @@
 
     const DB_PATH = (uid) => `artifacts/${appId}/users/${uid}/dashboardData/widgetOrder`;
 
-    // --- PERSISTÊNCIA NO FIRESTORE / LOCALSTORAGE ---
     async function saveWidgetOrder(order) {
       if (!isAuthReady || !db || !userId) {
         console.log("A autenticação não está pronta para salvar no Firestore.");
@@ -320,12 +277,10 @@
       }
     }
 
-    // --- CRIAR E CARREGAR OS MINI-GRÁFICOS (mini-symbol-overview) ---
     function loadWidgets() {
       gridContainer.innerHTML = "";
 
       symbols.forEach(symbol => {
-        // 1. Container externo do widget
         const widgetContainer = document.createElement("div");
         widgetContainer.className =
           "tradingview-widget-container widget bg-neutral-950 rounded-xl shadow-lg " +
@@ -333,23 +288,16 @@
           "flex flex-col";
         widgetContainer.dataset.symbol = symbol;
 
-        // 2. Wrapper (controle de altura e visual)
         const wrapper = document.createElement("div");
-        wrapper.className =
-          "widget-wrapper flex flex-col " +
-          "h-48 sm:h-52 md:h-56 lg:h-64"; // alturas responsivas
+        wrapper.className = "widget-wrapper flex flex-col";
 
-        // 3. Container do script/iframe
         const scriptContainer = document.createElement("div");
-        scriptContainer.className =
-          "widget-content p-0 " +
-          "w-full h-full flex flex-col";
+        scriptContainer.className = "widget-content p-0";
 
         const script = document.createElement("script");
         script.type = "text/javascript";
         script.async = true;
-        script.src =
-          "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
 
         script.text = JSON.stringify({
           symbol,
@@ -370,7 +318,6 @@
       });
     }
 
-    // --- INICIALIZAR O SORTABLE (REORDENAR OS WIDGETS) ---
     function initializeSortable() {
       new Sortable(gridContainer, {
         animation: 150,
@@ -385,21 +332,17 @@
       });
     }
 
-    // --- FUNÇÃO DE RESET (COM MODAL CUSTOMIZADO) ---
     window.resetWidgetOrder = function() {
       const modal = document.getElementById('confirmModal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
 
-      const cancelBtn = document.getElementById('cancelReset');
-      const confirmBtn = document.getElementById('confirmReset');
-
-      cancelBtn.onclick = () => {
+      document.getElementById('cancelReset').onclick = () => {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
       };
 
-      confirmBtn.onclick = async () => {
+      document.getElementById('confirmReset').onclick = async () => {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
 
@@ -407,4 +350,44 @@
         localStorage.removeItem('widgetOrder');
 
         const icon = resetButton.querySelector('svg');
-        icon.classList.add
+        icon.classList.add('hidden');
+        resetButton.innerHTML += '<span id="feedback" class="text-xl">✅</span>';
+        resetButton.disabled = true;
+
+        setTimeout(() => {
+          location.reload();
+        }, 500);
+      };
+    };
+
+    async function initializeDashboard() {
+      if (!firebaseConfig) {
+        console.warn("Configuração do Firebase ausente. Carregando widgets sem persistência de dados.");
+        loadWidgets();
+        initializeSortable();
+        return;
+      }
+
+      try {
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+        setLogLevel('Debug');
+
+        if (initialAuthToken) {
+          await signInWithCustomToken(auth, initialAuthToken);
+        } else {
+          await signInAnonymously(auth);
+        }
+
+        const user = auth.currentUser;
+
+        if (user) {
+          userId = user.uid;
+          isAuthReady = true;
+
+          await loadSavedOrder();
+          loadWidgets();
+          initializeSortable();
+        } else {
+          console.error("Falha ao ob

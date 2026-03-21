@@ -9,54 +9,51 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
+    /* Configuração de Fonte Global */
     body {
       font-family: 'Inter', sans-serif;
     }
 
-    /* Grid container */
-    #grid-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      grid-gap: 0.25rem;
-      margin: 0;
+    /* Container externo do widget */
+    .widget {
+      min-height: auto !important;
+      height: auto;
+      cursor: grab;
       padding: 0;
     }
 
-    /* Widget root */
-    .widget {
-      cursor: grab;
-      min-height: 0;
-      border-radius: 0.75rem;
+    /* Wrapper do widget (altura e layout) */
+    .widget-wrapper {
+      width: 100%;
+      height: 200px; /* MANTIDA em 200px para mini-symbol-overview */
+      border-radius: 0.75rem; /* rounded-xl */
+      box-shadow:
+        0 10px 15px -3px rgba(0, 0, 0, 0.1),
+        0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      position: relative;
       background-color: #0a0a0a;
       border: none;
-      box-shadow:
-        0 10px 15px -3px rgba(0,0,0,0.1),
-        0 4px 6px -2px rgba(0,0,0,0.05);
-      transition: transform 0.3s ease-in-out, box-shadow 0.15s ease-in-out;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .widget:active {
-      cursor: grabbing;
-      transform: scale(1.005);
     }
 
     /* Conteúdo interno do widget */
     .widget-content {
-      width: 100%;
-      height: 100%;
+      flex-grow: 1;
+      padding: 0;
+      transform: none;
+      transform-origin: top left;
       overflow: hidden;
     }
 
+    /* iframe interno */
     .widget-content iframe {
       width: 100%;
       height: 100%;
       border: none;
-      border-radius: 0;
+      border-radius: 0.25rem;
       background-color: #0a0a0a;
-      margin: 0;
-      padding: 0;
+      margin: 0 !important;
+      padding: 0 !important;
     }
 
     /* Sortable ghost */
@@ -64,6 +61,10 @@
       opacity: 0.4;
       background-color: #334155;
       border: 2px dashed #64748b;
+    }
+
+    .widget:active {
+      cursor: grabbing;
     }
 
     /* Tooltip */
@@ -127,73 +128,116 @@
 <body class="bg-neutral-950 text-gray-100 min-h-screen">
 
   <!-- Modal de confirmação -->
-  <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center z-50 transition-opacity duration-300">
+  <div id="confirmModal"
+       class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center z-50 transition-opacity duration-300">
     <div class="bg-slate-900 p-6 rounded-xl shadow-2xl w-80 border border-slate-700">
       <p class="text-white text-lg font-semibold mb-6">Deseja realmente resetar a ordem dos gráficos?</p>
       <div class="flex justify-end space-x-3">
-        <button id="cancelReset" class="px-4 py-2 bg-slate-700 text-gray-300 rounded-lg hover:bg-slate-600 transition">Cancelar</button>
-        <button id="confirmReset" class="px-4 py-2 bg-black text-gray-300 rounded-lg border border-slate-700 hover:bg-slate-800 transition">Confirmar</button>
+        <button id="cancelReset"
+                class="px-4 py-2 bg-slate-700 text-gray-300 rounded-lg hover:bg-slate-600 transition">
+          Cancelar
+        </button>
+        <button id="confirmReset"
+                class="px-4 py-2 bg-black text-gray-300 rounded-lg border border-slate-700 hover:bg-slate-800 transition">
+          Confirmar
+        </button>
       </div>
     </div>
   </div>
 
   <!-- Ticker Tape -->
-  <div class="tradingview-widget-container p-3 sm:p-4 border-b border-slate-700 bg-neutral-950">
-    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-    {
-      "symbols": [
-        {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
-        {"proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100"},
-        {"proName": "FX_IDC:USDBRL", "title": "USD/BRL"},
-        {"proName": "BITSTAMP:BTCUSD", "title": "Bitcoin"},
-        {"proName": "BITSTAMP:ETHUSD", "title": "Ethereum"},
-        {"proName": "US500.F", "title": "S&P 500 Index"},
-        {"proName": "US10Y", "title": "US 10Y Yield"},
-        {"proName": "XAUUSD", "title": "Gold"},
-        {"proName": "TVC:USOIL", "title": "Oil"},
-        {"proName": "NYSE:VALE", "title": "Vale"},
-        {"proName": "NYSE:PBR", "title": "Petrobras"}
-      ],
-      "showSymbolLogo": true,
-      "colorTheme": "dark",
-      "isTransparent": false,
-      "displayMode": "adaptive",
-      "locale": "en"
-    }
+  <div class="tradingview-widget-container p-3 sm:p-4 border-b border-slate-700">
+    <script type="text/javascript"
+            src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js"
+            async>
+      {
+        "symbols": [
+          {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
+          {"proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100"},
+          {"proName": "FX_IDC:USDEUR", "title": "USD/EUR"},
+          {"proName": "BITSTAMP:BTCUSD", "title": "Bitcoin"},
+          {"proName": "BITSTAMP:ETHUSD", "title": "Ethereum"},
+          {"proName": "FX_IDC:USDBRL", "title": "USD/BRL"},
+          {"proName": "FXOPEN:DXY", "title": "Dólar Index"},
+          {"proName": "AMEX:EWZ", "title": "iShares MSCI Brazil"},
+          {"proName": "NYSE:BLK", "title": "BlackRock"},
+          {"proName": "BLACKBULL:US500.F", "title": "US500 Futures"},
+          {"proName": "US02Y", "title": "US 2Y Yield"},
+          {"proName": "US10Y", "title": "US 10Y Yield"},
+          {"proName": "ACTIVTRADES:BRA50", "title": "BRA50"},
+          {"proName": "US500.F", "title": "S&P 500 Index"},
+          {"proName": "US2000", "title": "Russell 2000"},
+          {"proName": "NASDAQ:NDAQ", "title": "Nasdaq Inc."},
+          {"proName": "CRYPTOCAP:USDT.D", "title": "USDT.D"},
+          {"proName": "CRYPTOCAP:BTC.D", "title": "BTC Dominance"},
+          {"proName": "FX_IDC:USDJPY", "title": "USD/JPY"},
+          {"proName": "FX_IDC:USDGBP", "title": "USD/GBP"},
+          {"proName": "XAUUSD", "title": "Gold"},
+          {"proName": "TVC:USOIL", "title": "Oil"},
+          {"proName": "NYSE:VALE", "title": "Vale"},
+          {"proName": "NYSE:PBR", "title": "Petrobras"}
+        ],
+        "showSymbolLogo": true,
+        "colorTheme": "dark",
+        "isTransparent": false,
+        "displayMode": "adaptive",
+        "locale": "en"
+      }
     </script>
   </div>
 
-  <!-- Content main -->
+  <!-- Conteúdo principal -->
   <main class="p-4 space-y-4">
 
-    <!-- GRID DE MINI-GRÁFICOS (aqui estão os mini-symbols) -->
+    <!-- MINI-GRÁFICOS (GRID ORIGINAL COM TODOS OS WIDGETS) -->
     <div id="grid-container"
-         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
-      <!-- Os mini-gráficos serão carregados aqui pelo JS -->
+         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px">
+      <!-- Os mini-symbols serão carregados aqui pelo JavaScript -->
     </div>
 
-    <!-- NOTÍCIAS E HEATMAP -->
+    <!-- IFRAMES: NOTÍCIAS E HEATMAP -->
     <div class="flex flex-col lg:flex-row gap-4">
+
+      <!-- Noticias -->
       <div class="flex-1 bg-neutral-950 rounded-xl shadow-lg transition hover:shadow-xl hover:shadow-accent/20 duration-300 min-h-[600px] lg:min-h-[800px] flex flex-col">
-        <div class="p-1 bg-neutral-950 rounded-t-xl text-lg font-semibold text-gray-300 border-b border-slate-700 flex-shrink-0">Notícias e Calendário</div>
-        <iframe class="w-full h-full flex-grow" src="https://facoriolano.github.io/widget-tradingview/tvnews2.html" title="Notícias"></iframe>
+        <div class="p-1 bg-neutral-950 rounded-t-xl text-lg font-semibold text-gray-300 border-b border-slate-700 flex-shrink-0">
+          Notícias e Calendário
+        </div>
+        <iframe
+          class="w-full h-full flex-grow"
+          src="https://facoriolano.github.io/widget-tradingview/tvnews2.html"
+          title="Notícias">
+        </iframe>
       </div>
 
+      <!-- Heatmap -->
       <div class="flex-1 bg-neutral-950 rounded-xl shadow-lg transition hover:shadow-xl hover:shadow-accent/20 duration-300 min-h-[600px] lg:min-h-[800px] flex flex-col">
-        <div class="p-1 bg-neutral-950 rounded-t-xl text-lg font-semibold text-gray-300 border-b border-slate-700 flex-shrink-0">Mapa de Calor (Heatmap)</div>
-        <iframe class="w-full h-full flex-grow" src="https://facoriolano.github.io/widget-tradingview/heat1.html" title="Mapa de Calor"></iframe>
+        <div class="p-1 bg-neutral-950 rounded-t-xl text-lg font-semibold text-gray-300 border-b border-slate-700 flex-shrink-0">
+          Mapa de Calor (Heatmap)
+        </div>
+        <iframe
+          class="w-full h-full flex-grow"
+          src="https://facoriolano.github.io/widget-tradingview/heat1.html"
+          title="Mapa de Calor">
+        </iframe>
       </div>
     </div>
-
   </main>
 
-  <!-- FAB de reset -->
+  <!-- FAB de Reset -->
   <div class="fixed bottom-6 right-6 z-40 tooltip">
     <button id="resetButton"
-      class="p-3 text-lg font-medium text-gray-400 bg-slate-800 rounded-full border border-slate-700 shadow-xl 
-             hover:text-white hover:bg-slate-700 transition duration-150 ease-in-out hover:scale-110">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0h5m-5 0L7.171 7.171m0 0L4 4" />
+            onclick="window.resetWidgetOrder()"
+            class="p-3 text-lg font-medium text-gray-400 bg-slate-800 rounded-full border border-slate-700 shadow-xl 
+                   hover:text-white hover:bg-slate-700 transition duration-150 ease-in-out hover:scale-110">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           class="h-6 w-6 text-gray-300"
+           fill="none"
+           viewBox="0 0 24 24"
+           stroke="currentColor"
+           stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0h5m-5 0L7.171 7.171m0 0L4 4" />
       </svg>
     </button>
     <span class="tooltiptext">Resetar Ordem dos Gráficos</span>
@@ -204,19 +248,10 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import {
-      getAuth,
-      signInAnonymously,
-      signInWithCustomToken
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import {
-      getFirestore,
-      doc,
-      setDoc,
-      getDoc
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // --- CONSTANTES ---
+    // --- CONSTANTES E VARIÁVEIS GLOBAIS ---
     const initialSymbols = [
       "FX_IDC:USDBRL", "FXOPEN:DXY", "US10Y", "AMEX:EWZ", "ACTIVTRADES:BRA50",
       "NYSE:PBR", "NYSE:VALE", "CAPITALCOM:VIX", "BITSTAMP:BTCUSD", "CRYPTOCAP:USDT.D", "US500.F",
@@ -229,10 +264,10 @@
     const gridContainer = document.getElementById("grid-container");
     const resetButton = document.getElementById("resetButton");
 
-    // Firebase (se vier)
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
     const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
     const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
     let db = null;
     let auth = null;
     let userId = null;
@@ -240,16 +275,18 @@
 
     const DB_PATH = (uid) => `artifacts/${appId}/users/${uid}/dashboardData/widgetOrder`;
 
-    // --- SALVAR / CARREGAR ORDEM ---
+    // --- PERSISTÊNCIA NO FIRESTORE / LOCALSTORAGE ---
     async function saveWidgetOrder(order) {
-      if (!isAuthReady || !db || !userId) return;
-
+      if (!isAuthReady || !db || !userId) {
+        console.log("A autenticação não está pronta para salvar no Firestore.");
+        return;
+      }
       try {
         const docRef = doc(db, DB_PATH(userId));
         await setDoc(docRef, { order: order });
-        console.log("Ordem salva no Firestore.");
+        console.log("Ordem salva no Firestore com sucesso.");
       } catch (error) {
-        console.error("Erro ao salvar ordem:", error);
+        console.error("Erro ao salvar ordem no Firestore:", error);
       }
     }
 
@@ -261,85 +298,79 @@
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          const saved = docSnap.data().order;
-          if (Array.isArray(saved) && saved.length > 0) {
-            symbols = saved;
+          const savedSymbols = docSnap.data().order;
+          if (Array.isArray(savedSymbols) && savedSymbols.length > 0) {
+            symbols = savedSymbols;
+            console.log("Ordem carregada do Firestore.");
           }
         } else {
-          const savedJSON = localStorage.getItem('widgetOrder');
-          if (savedJSON) {
-            const saved = JSON.parse(savedJSON);
-            if (Array.isArray(saved) && saved.length > 0) {
-              symbols = saved;
+          const savedOrderJSON = localStorage.getItem('widgetOrder');
+          if (savedOrderJSON) {
+            const savedSymbols = JSON.parse(savedOrderJSON);
+            if (Array.isArray(savedSymbols) && savedSymbols.length > 0) {
+              symbols = savedSymbols;
+              console.log("Ordem carregada do LocalStorage (migrando para Firestore...).");
               saveWidgetOrder(symbols);
               localStorage.removeItem('widgetOrder');
             }
           }
         }
       } catch (error) {
-        console.error("Erro ao carregar ordem:", error);
+        console.error("Erro ao carregar ordem do Firestore.", error);
       }
     }
 
-    // --- CRIAR MINI-GRÁFICO (mini-symbol-overview) DINÂMICO ---
-    function createMiniChart(symbol, height = 200, cols = 1) {
-      const widget = document.createElement("div");
-      widget.className = "widget bg-neutral-950 rounded-xl shadow-lg transition transform hover:scale-[1.01] hover:shadow-xl hover:shadow-accent/20 duration-300";
-      widget.dataset.symbol = symbol;
-      widget.style.minHeight = `${height}px`;
-      widget.style.gridColumn = `span ${cols}`;
-
-      const content = document.createElement("div");
-      content.className = "widget-content";
-      content.style.height = `${height}px`;
-
-      const script = document.createElement("script");
-      script.type = "text/javascript";
-      script.async = true;
-      script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
-
-      // Config do widget
-      script.text = JSON.stringify({
-        symbol,
-        width: "100%",
-        height: "100%",
-        locale: "en",
-        dateRange: "1D",
-        colorTheme: "dark",
-        isTransparent: false,
-        autosize: true,
-        interval: "D"
-      });
-
-      content.appendChild(script);
-      widget.appendChild(content);
-      gridContainer.appendChild(widget);
-
-      return widget;
-    }
-
-    function loadMiniCharts() {
+    // --- CRIAR E CARREGAR OS MINI-GRÁFICOS (mini-symbol-overview) ---
+    function loadWidgets() {
       gridContainer.innerHTML = "";
 
-      // Aqui você pode ajustar height/cols por símbolo, se quiser
-      const layout = symbols.map(symbol => {
-        let height = 200;
-        let cols = 1;
+      symbols.forEach(symbol => {
+        // 1. Container externo do widget
+        const widgetContainer = document.createElement("div");
+        widgetContainer.className =
+          "tradingview-widget-container widget bg-neutral-950 rounded-xl shadow-lg " +
+          "transition transform hover:scale-[1.01] hover:shadow-xl hover:shadow-accent/20 duration-300 " +
+          "flex flex-col";
+        widgetContainer.dataset.symbol = symbol;
 
-        // Exemplo: alguns símbolos com altura ou coluna diferente
-        if (symbol === "US10Y" || symbol === "US500.F") {
-          height = 220;
-          cols = 1;
-        }
+        // 2. Wrapper (controle de altura e visual)
+        const wrapper = document.createElement("div");
+        wrapper.className =
+          "widget-wrapper flex flex-col " +
+          "h-48 sm:h-52 md:h-56 lg:h-64"; // alturas responsivas
 
-        return { symbol, height, cols };
-      });
+        // 3. Container do script/iframe
+        const scriptContainer = document.createElement("div");
+        scriptContainer.className =
+          "widget-content p-0 " +
+          "w-full h-full flex flex-col";
 
-      layout.forEach(({ symbol, height, cols }) => {
-        createMiniChart(symbol, height, cols);
+        const script = document.createElement("script");
+        script.type = "text/javascript";
+        script.async = true;
+        script.src =
+          "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+
+        script.text = JSON.stringify({
+          symbol,
+          width: "100%",
+          height: "100%",
+          locale: "en",
+          colorTheme: "dark",
+          isTransparent: false,
+          autosize: true,
+          interval: "D",
+          dateRange: "1D"
+        });
+
+        scriptContainer.appendChild(script);
+        wrapper.appendChild(scriptContainer);
+        widgetContainer.appendChild(wrapper);
+        gridContainer.appendChild(widgetContainer);
       });
     }
 
+    // --- INICIALIZAR O SORTABLE (REORDENAR OS WIDGETS) ---
     function initializeSortable() {
       new Sortable(gridContainer, {
         animation: 150,
@@ -347,68 +378,33 @@
         ghostClass: "sortable-ghost",
         onEnd: () => {
           const newOrder = Array.from(gridContainer.querySelectorAll(".widget"))
-            .map(w => w.dataset.symbol);
+            .map(div => div.dataset.symbol);
           symbols = newOrder;
           saveWidgetOrder(newOrder);
         }
       });
     }
 
-    // --- RESET (com modal) ---
+    // --- FUNÇÃO DE RESET (COM MODAL CUSTOMIZADO) ---
     window.resetWidgetOrder = function() {
       const modal = document.getElementById('confirmModal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
 
-      document.getElementById('cancelReset').onclick = () => {
+      const cancelBtn = document.getElementById('cancelReset');
+      const confirmBtn = document.getElementById('confirmReset');
+
+      cancelBtn.onclick = () => {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
       };
 
-      document.getElementById('confirmReset').onclick = async () => {
+      confirmBtn.onclick = async () => {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+
         await saveWidgetOrder(initialSymbols);
         localStorage.removeItem('widgetOrder');
-        resetButton.disabled = true;
-        resetButton.innerHTML += '<span id="feedback" class="text-xl">✅</span>';
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
-      };
-    };
 
-    // --- INICIALIZAÇÃO DO FIREBASE E DASHBOARD ---
-    async function initializeDashboard() {
-      if (!firebaseConfig) {
-        console.warn("Configuração do Firebase ausente. Carregando widgets sem persistência.");
-        loadMiniCharts();
-        initializeSortable();
-        return;
-      }
-
-      try {
-        const app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
-
-        if (initialAuthToken) {
-          await signInWithCustomToken(auth, initialAuthToken);
-        } else {
-          await signInAnonymously(auth);
-        }
-
-        const user = auth.currentUser;
-        if (user) {
-          userId = user.uid;
-          isAuthReady = true;
-
-          await loadSavedOrder();
-          loadMiniCharts();
-          initializeSortable();
-        } else {
-          console.error("Falha ao obter usuário. Carregando ordem inicial.");
-          loadMiniCharts();
-          initializeSortable();
-        }
-      }
+        const icon = resetButton.querySelector('svg');
+        icon.classList.add

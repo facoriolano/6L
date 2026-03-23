@@ -27,17 +27,6 @@
             margin: 0;
             overflow: hidden;
         }
-        #error-display {
-            position: fixed;
-            top: 0;
-            left: 0;
-            background: rgba(255,0,0,0.9);
-            color: white;
-            padding: 10px;
-            z-index: 9999;
-            display: none;
-            font-family: monospace;
-        }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         .font-label { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.02em; }
         
@@ -51,24 +40,17 @@
         }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Remove white borders from any default elements */
+        * { border-color: var(--neutral-border) !important; }
     </style>
 </head>
 <body>
-    <div id="error-display"></div>
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
         
-        // Safe access to Recharts
-        const { 
-            AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
-        } = window.Recharts || {};
-
-        if (!window.Recharts) {
-            console.error('Recharts not loaded');
-        }
-
         // --- Data Service ---
         const INITIAL_ASSETS = [
             { id: 'sp500', name: 'S&P 500', symbol: 'SPX', tvSymbol: 'FOREXCOM:SPXUSD', value: 5250.00, category: 'Indices' },
@@ -226,6 +208,18 @@
                 });
             }, [assets, searchQuery, selectedCategory]);
 
+            const chartData = useMemo(() => {
+                const sp = assets.find(a => a.id === 'sp500')?.history || [];
+                const dxy = assets.find(a => a.id === 'dxy')?.history || [];
+                return sp.map((h, i) => ({
+                    time: h.time,
+                    sp500: h.value,
+                    dxy: (dxy[i]?.value || 0) * 50
+                }));
+            }, [assets]);
+
+            const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = window.Recharts;
+
             return (
                 <div className="flex flex-col h-screen bg-neutral-dark text-white overflow-hidden">
                     {/* Ticker at Top */}
@@ -239,7 +233,7 @@
                                 {assets.map(asset => (
                                     <div key={asset.id} className="flex items-center gap-2">
                                         <span className="text-[10px] font-label text-gray-400">{asset.symbol}</span>
-                                        <span className={`text-[10px] font-label font-bold ${asset.change >= 0 ? "text-secondary" : "text-tertiary"}`}>
+                                        <span className={`text-[10px] font-label font-bold ${asset.change >= 0 ? "text-primary" : "text-tertiary"}`}>
                                             {asset.value.toFixed(asset.category === 'Forex' ? 4 : 2)}
                                         </span>
                                     </div>
@@ -271,7 +265,7 @@
                                 <SidebarIcon icon="package" active={selectedCategory === 'Commodities'} onClick={() => setSelectedCategory(selectedCategory === 'Commodities' ? null : 'Commodities')} label="Commodities" />
                                 <div className="w-8 h-px bg-neutral-border my-1" />
                                 <div className="relative group">
-                                    <div className={`w-3 h-3 rounded-full border border-neutral-border transition-all ${marketOpen ? "bg-secondary animate-pulse" : "bg-tertiary"}`} />
+                                    <div className={`w-3 h-3 rounded-full border border-neutral-border transition-all ${marketOpen ? "bg-secondary animate-pulse shadow-[0_0_8px_rgba(63,185,80,0.5)]" : "bg-tertiary shadow-[0_0_8px_rgba(248,81,73,0.5)]"}`} />
                                     <div className="absolute left-full ml-4 px-2 py-1 bg-neutral-card border border-neutral-border rounded text-[10px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 font-label uppercase">
                                         Market: {marketOpen ? 'Open' : 'Closed'}
                                     </div>
@@ -310,7 +304,7 @@
                             <div className="flex-1 overflow-y-auto scroll-smooth">
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-px bg-neutral-border border-b border-neutral-border">
                                     {filteredAssets.map((asset) => (
-                                        <div key={asset.id} className="bg-neutral-card h-[200px] overflow-hidden">
+                                        <div key={asset.id} className="bg-neutral-card h-[200px] overflow-hidden border-b border-r border-neutral-border">
                                             <TradingViewWidget symbol={asset.tvSymbol} />
                                         </div>
                                     ))}
@@ -335,32 +329,26 @@
                                             </div>
                                         </div>
                                         <div className="h-[120px] w-full">
-                                            {window.Recharts && (
-                                                <ResponsiveContainer width="100%" height="100%">
-                                                    <AreaChart data={(assets.find(a => a.id === 'sp500')?.history || []).map((h, i) => ({
-                                                        time: h.time,
-                                                        sp500: h.value,
-                                                        dxy: (assets.find(a => a.id === 'dxy')?.history[i]?.value || 0) * 50
-                                                    }))}>
-                                                        <defs>
-                                                            <linearGradient id="colorSp" x1="0" y1="0" x2="0" y2="1">
-                                                                <stop offset="5%" stopColor="#58a6ff" stopOpacity={0.3}/>
-                                                                <stop offset="95%" stopColor="#58a6ff" stopOpacity={0}/>
-                                                            </linearGradient>
-                                                            <linearGradient id="colorDxy" x1="0" y1="0" x2="0" y2="1">
-                                                                <stop offset="5%" stopColor="#f85149" stopOpacity={0.3}/>
-                                                                <stop offset="95%" stopColor="#f85149" stopOpacity={0}/>
-                                                            </linearGradient>
-                                                        </defs>
-                                                        <CartesianGrid strokeDasharray="3 3" stroke="#30363d" vertical={false} />
-                                                        <XAxis dataKey="time" stroke="#484f58" fontSize={10} tickLine={false} axisLine={false} interval={4} />
-                                                        <YAxis hide domain={['auto', 'auto']} />
-                                                        <Tooltip contentStyle={{ backgroundColor: '#0d1117', border: '1px solid #30363d', borderRadius: '8px' }} />
-                                                        <Area type="monotone" dataKey="sp500" stroke="#58a6ff" fillOpacity={1} fill="url(#colorSp)" strokeWidth={2} />
-                                                        <Area type="monotone" dataKey="dxy" stroke="#f85149" fillOpacity={1} fill="url(#colorDxy)" strokeWidth={2} />
-                                                    </AreaChart>
-                                                </ResponsiveContainer>
-                                            )}
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <AreaChart data={chartData}>
+                                                    <defs>
+                                                        <linearGradient id="colorSp" x1="0" y1="0" x2="0" y2="1">
+                                                            <stop offset="5%" stopColor="#58a6ff" stopOpacity={0.3}/>
+                                                            <stop offset="95%" stopColor="#58a6ff" stopOpacity={0}/>
+                                                        </linearGradient>
+                                                        <linearGradient id="colorDxy" x1="0" y1="0" x2="0" y2="1">
+                                                            <stop offset="5%" stopColor="#f85149" stopOpacity={0.3}/>
+                                                            <stop offset="95%" stopColor="#f85149" stopOpacity={0}/>
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="#30363d" vertical={false} />
+                                                    <XAxis dataKey="time" stroke="#484f58" fontSize={10} tickLine={false} axisLine={false} interval={4} />
+                                                    <YAxis hide domain={['auto', 'auto']} />
+                                                    <Tooltip contentStyle={{ backgroundColor: '#0d1117', border: '1px solid #30363d', borderRadius: '8px' }} />
+                                                    <Area type="monotone" dataKey="sp500" stroke="#58a6ff" fillOpacity={1} fill="url(#colorSp)" strokeWidth={2} />
+                                                    <Area type="monotone" dataKey="dxy" stroke="#f85149" fillOpacity={1} fill="url(#colorDxy)" strokeWidth={2} />
+                                                </AreaChart>
+                                            </ResponsiveContainer>
                                         </div>
                                     </section>
                                 </div>
@@ -371,13 +359,8 @@
             );
         }
 
-        try {
-            const root = ReactDOM.createRoot(document.getElementById('root'));
-            root.render(<App />);
-        } catch (err) {
-            document.getElementById('error-display').style.display = 'block';
-            document.getElementById('error-display').innerText = 'Erro de Renderização: ' + err.message;
-        }
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>

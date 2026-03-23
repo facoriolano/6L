@@ -8,8 +8,8 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
+    <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.12.2/umd/Recharts.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -27,6 +27,17 @@
             margin: 0;
             overflow: hidden;
         }
+        #error-display {
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: rgba(255,0,0,0.9);
+            color: white;
+            padding: 10px;
+            z-index: 9999;
+            display: none;
+            font-family: monospace;
+        }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         .font-label { font-family: 'JetBrains Mono', monospace; letter-spacing: -0.02em; }
         
@@ -40,47 +51,23 @@
         }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Custom Tailwind config for the single file */
-        @layer base {
-            .bg-primary { background-color: var(--primary); }
-            .text-primary { color: var(--primary); }
-            .bg-secondary { background-color: var(--secondary); }
-            .text-secondary { color: var(--secondary); }
-            .bg-tertiary { background-color: var(--tertiary); }
-            .text-tertiary { color: var(--tertiary); }
-            .bg-neutral-dark { background-color: var(--neutral-dark); }
-            .bg-neutral-card { background-color: var(--neutral-card); }
-            .border-neutral-border { border-color: var(--neutral-border); }
-        }
     </style>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#58a6ff',
-                        secondary: '#3fb950',
-                        tertiary: '#f85149',
-                        neutral: {
-                            dark: '#0d1117',
-                            card: '#161b22',
-                            border: '#30363d',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
 </head>
 <body>
+    <div id="error-display"></div>
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
+        
+        // Safe access to Recharts
         const { 
             AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
-        } = Recharts;
+        } = window.Recharts || {};
+
+        if (!window.Recharts) {
+            console.error('Recharts not loaded');
+        }
 
         // --- Data Service ---
         const INITIAL_ASSETS = [
@@ -191,15 +178,19 @@
             );
         }
 
-        function SidebarIcon({ icon: IconName, active = false, onClick, label, className }) {
+        function SidebarIcon({ icon, active = false, onClick, label, className }) {
+            useEffect(() => {
+                if (window.lucide) window.lucide.createIcons();
+            });
+
             return (
                 <button 
                     onClick={onClick}
-                    className={`p-2 rounded-lg transition-all relative group ${
+                    className={`p-2 rounded-lg transition-all relative group flex items-center justify-center ${
                         active ? "text-primary bg-primary/10" : "text-gray-500 hover:text-primary hover:bg-primary/5"
                     } ${className || ""}`}
                 >
-                    <i data-lucide={IconName} size="20"></i>
+                    <i data-lucide={icon} style={{ width: '20px', height: '20px' }}></i>
                     {active && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />}
                     <div className="absolute left-full ml-4 px-2 py-1 bg-neutral-card border border-neutral-border rounded text-[10px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 font-label uppercase">
                         {label}
@@ -217,13 +208,13 @@
             const [isSearchVisible, setIsSearchVisible] = useState(false);
 
             useEffect(() => {
-                lucide.createIcons();
+                if (window.lucide) window.lucide.createIcons();
                 const interval = setInterval(() => setMarketOpen(isMarketOpen()), 60000);
                 return () => clearInterval(interval);
             }, []);
 
             useEffect(() => {
-                lucide.createIcons();
+                if (window.lucide) window.lucide.createIcons();
             }, [isSidebarOpen, isSearchVisible, selectedCategory]);
 
             const filteredAssets = useMemo(() => {
@@ -234,8 +225,6 @@
                     return matchesSearch && matchesCategory;
                 });
             }, [assets, searchQuery, selectedCategory]);
-
-            const categories = Array.from(new Set(assets.map(a => a.category)));
 
             return (
                 <div className="flex flex-col h-screen bg-neutral-dark text-white overflow-hidden">
@@ -266,7 +255,7 @@
                         {/* Sidebar */}
                         <aside className={`bg-neutral-card border-r border-neutral-border transition-all duration-300 flex flex-col items-center py-4 gap-4 ${isSidebarOpen ? "w-16" : "w-0 overflow-hidden opacity-0"}`}>
                             <div className="w-8 h-8 bg-primary flex items-center justify-center mb-2 cursor-pointer" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-                                <i data-lucide="activity" className="text-neutral-dark"></i>
+                                <i data-lucide="activity" style={{ color: '#0d1117' }}></i>
                             </div>
                             
                             <nav className="flex flex-col gap-2 flex-1 items-center">
@@ -302,7 +291,7 @@
                             {isSearchVisible && (
                                 <div className="absolute top-4 left-4 right-4 z-30">
                                     <div className="relative max-w-md mx-auto">
-                                        <i data-lucide="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size="16"></i>
+                                        <i data-lucide="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" style={{ width: '16px' }}></i>
                                         <input 
                                             autoFocus
                                             type="text" 
@@ -312,7 +301,7 @@
                                             onChange={(e) => setSearchQuery(e.target.value)}
                                         />
                                         <button onClick={() => { setIsSearchVisible(false); setSearchQuery(''); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white">
-                                            <i data-lucide="x" size="16"></i>
+                                            <i data-lucide="x" style={{ width: '16px' }}></i>
                                         </button>
                                     </div>
                                 </div>
@@ -346,30 +335,32 @@
                                             </div>
                                         </div>
                                         <div className="h-[120px] w-full">
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <AreaChart data={(assets.find(a => a.id === 'sp500')?.history || []).map((h, i) => ({
-                                                    time: h.time,
-                                                    sp500: h.value,
-                                                    dxy: (assets.find(a => a.id === 'dxy')?.history[i]?.value || 0) * 50
-                                                }))}>
-                                                    <defs>
-                                                        <linearGradient id="colorSp" x1="0" y1="0" x2="0" y2="1">
-                                                            <stop offset="5%" stopColor="#58a6ff" stopOpacity={0.3}/>
-                                                            <stop offset="95%" stopColor="#58a6ff" stopOpacity={0}/>
-                                                        </linearGradient>
-                                                        <linearGradient id="colorDxy" x1="0" y1="0" x2="0" y2="1">
-                                                            <stop offset="5%" stopColor="#f85149" stopOpacity={0.3}/>
-                                                            <stop offset="95%" stopColor="#f85149" stopOpacity={0}/>
-                                                        </linearGradient>
-                                                    </defs>
-                                                    <CartesianGrid strokeDasharray="3 3" stroke="#30363d" vertical={false} />
-                                                    <XAxis dataKey="time" stroke="#484f58" fontSize={10} tickLine={false} axisLine={false} interval={4} />
-                                                    <YAxis hide domain={['auto', 'auto']} />
-                                                    <Tooltip contentStyle={{ backgroundColor: '#0d1117', border: '1px solid #30363d', borderRadius: '8px' }} />
-                                                    <Area type="monotone" dataKey="sp500" stroke="#58a6ff" fillOpacity={1} fill="url(#colorSp)" strokeWidth={2} />
-                                                    <Area type="monotone" dataKey="dxy" stroke="#f85149" fillOpacity={1} fill="url(#colorDxy)" strokeWidth={2} />
-                                                </AreaChart>
-                                            </ResponsiveContainer>
+                                            {window.Recharts && (
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    <AreaChart data={(assets.find(a => a.id === 'sp500')?.history || []).map((h, i) => ({
+                                                        time: h.time,
+                                                        sp500: h.value,
+                                                        dxy: (assets.find(a => a.id === 'dxy')?.history[i]?.value || 0) * 50
+                                                    }))}>
+                                                        <defs>
+                                                            <linearGradient id="colorSp" x1="0" y1="0" x2="0" y2="1">
+                                                                <stop offset="5%" stopColor="#58a6ff" stopOpacity={0.3}/>
+                                                                <stop offset="95%" stopColor="#58a6ff" stopOpacity={0}/>
+                                                            </linearGradient>
+                                                            <linearGradient id="colorDxy" x1="0" y1="0" x2="0" y2="1">
+                                                                <stop offset="5%" stopColor="#f85149" stopOpacity={0.3}/>
+                                                                <stop offset="95%" stopColor="#f85149" stopOpacity={0}/>
+                                                            </linearGradient>
+                                                        </defs>
+                                                        <CartesianGrid strokeDasharray="3 3" stroke="#30363d" vertical={false} />
+                                                        <XAxis dataKey="time" stroke="#484f58" fontSize={10} tickLine={false} axisLine={false} interval={4} />
+                                                        <YAxis hide domain={['auto', 'auto']} />
+                                                        <Tooltip contentStyle={{ backgroundColor: '#0d1117', border: '1px solid #30363d', borderRadius: '8px' }} />
+                                                        <Area type="monotone" dataKey="sp500" stroke="#58a6ff" fillOpacity={1} fill="url(#colorSp)" strokeWidth={2} />
+                                                        <Area type="monotone" dataKey="dxy" stroke="#f85149" fillOpacity={1} fill="url(#colorDxy)" strokeWidth={2} />
+                                                    </AreaChart>
+                                                </ResponsiveContainer>
+                                            )}
                                         </div>
                                     </section>
                                 </div>
@@ -380,8 +371,13 @@
             );
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        try {
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(<App />);
+        } catch (err) {
+            document.getElementById('error-display').style.display = 'block';
+            document.getElementById('error-display').innerText = 'Erro de Renderização: ' + err.message;
+        }
     </script>
 </body>
 </html>
